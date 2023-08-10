@@ -1,0 +1,6 @@
+chromadb==0.4.4
+InstructorEmbedding==1.0.1
+langchain==0.0.246
+llama-cpp-python==0.1.77
+pypdf==3.13.0
+unstructured==0.5.9
