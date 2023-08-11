@@ -29,3 +29,17 @@ def vectorize(folder):
 
     except Exception as e:
         print(f"Error while vectorizing: {e}")
+
+
+def delete_files_in_folder(folder):
+    try:
+        files = os.listdir(folder)
+
+        for file in files:
+            full_path = os.path.join(folder, file)
+            if os.path.isfile(full_path):
+                os.remove(full_path)
+                print(f"Files removed: {full_path}")
+
+    except Exception as e:
+        print(f"Error while removing files: {e}")

@@ -41,9 +41,9 @@ def markdown_splitter(md_docs):
 def process_markdown(file_path):
     try:
         processed_markdown = []
-        print("File to scan:", file_path)
+        # print("File to scan:", file_path)
         md_docs = get_markdown_documents(file_path)
-        print("md text:", md_docs[0]["text"])
+        # print("md text:", md_docs[0]["text"])
         md_splits = markdown_splitter(md_docs[0]["text"])
 
         for md_split in md_splits:
