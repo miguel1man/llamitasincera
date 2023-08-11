@@ -1,19 +1,16 @@
-from file_tools import scan_folder
+import os
 from langchain.text_splitter import MarkdownHeaderTextSplitter
 
 
-def get_markdown_documents(folder_path):
+def get_markdown_documents(file_path):
     try:
-        files = scan_folder(folder_path)
-        markdown_documents = {}
-
-        for file in files:
-            file_path = folder_path + "/" + file["name"]
-            with open(file_path) as f:
-                text = f.read()
-                markdown_documents[file["name"]] = {"text": text}
-
-        return markdown_documents
+        md_docs = []
+        with open(file_path) as f:
+            text = f.read()
+            file_name = os.path.basename(file_path)
+            md_docs.append({"file": file_name, "text": text})
+        print("markdown document:", md_docs)
+        return md_docs
 
     except Exception as e:
         print(f"Error scanning markdown: {e}")
@@ -33,6 +30,7 @@ def markdown_splitter(md_docs):
             headers_to_split_on=headers_to_split_on
         )
         markdown_split_results = md_splitter.split_text(md_docs)
+        print("markdown_split_results", markdown_split_results)
 
         return markdown_split_results
 
@@ -40,27 +38,24 @@ def markdown_splitter(md_docs):
         print(f"Error splitting: {e}")
 
 
-def process_markdown(folder_path):
+def process_markdown(file_path):
     try:
         processed_markdown = []
-        files = scan_folder(folder_path)
+        print("File to scan:", file_path)
+        md_docs = get_markdown_documents(file_path)
+        print("md text:", md_docs[0]["text"])
+        md_splits = markdown_splitter(md_docs[0]["text"])
 
-        for file in files:
-            print("Markdown to scan:", file["name"])
-            md_docs = get_markdown_documents(folder_path)
-            """ print("md_docs:", md_docs) """
-            md_splits = markdown_splitter(md_docs[file["name"]]["text"])
-            """ print("md_docs:", md_docs) """
+        for md_split in md_splits:
+            processed_markdown.append(
+                {
+                    "text": md_split.page_content,
+                    "header": md_split.metadata["Header 2"],
+                    "file": md_docs[0]["file"],
+                }
+            )
 
-            for md_split in md_splits:
-                processed_markdown.append(
-                    {
-                        "text": md_split.page_content,
-                        "header": md_split.metadata["Header 2"],
-                        "file": file["name"],
-                    }
-                )
-
+        print("processed_markdown:", processed_markdown)
         return processed_markdown
 
     except Exception as e:

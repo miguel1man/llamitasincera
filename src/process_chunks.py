@@ -1,7 +1,10 @@
 from embedding_manager import split_text_to_chunks
+from vector_db_manager import start_vector_db
+
+vector_db = start_vector_db()
 
 
-def process_chunks(chunks, vector_db):
+def process_chunks(chunks):
     try:
         length = len(chunks)
         for i in range(length):
