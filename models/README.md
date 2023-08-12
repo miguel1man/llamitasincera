@@ -1,5 +1,5 @@
 ## Models
-Place any `.bin` model in the `/models` folder.
+Place any `.bin` file in the `/models` folder.
 
 ## Best models on Huggingface
 - [Leaderboard](https://huggingface.co/spaces/HuggingFaceH4/open_llm_leaderboard)

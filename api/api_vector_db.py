@@ -1,8 +1,10 @@
 from flask import Flask, request, jsonify
+from flask_cors import CORS
 from vector_db_requests import vector_db_query
 import json
 
 app = Flask(__name__)
+CORS(app)
 
 
 @app.route("/ask-db", methods=["POST"])
@@ -24,7 +26,7 @@ def ask_question():
             unique_responses.add(res_json)
             response_list.append(res_dict)
 
-    response_with_id = {"id": question_id, "response": response_list}
+    response_with_id = {"id": question_id, "content": response_list}
 
     return jsonify(response_with_id)
 
