@@ -162,7 +162,9 @@ cython_debug/
 # vscode
 .vscode/
 
+# models
+*.bin
+
 # folders
-docs/
-models/
+uploads/
 vector_database/

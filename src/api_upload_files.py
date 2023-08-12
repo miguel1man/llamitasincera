@@ -1,10 +1,12 @@
 import os
 from flask import Flask, jsonify, request
+from flask_cors import CORS
 from file_tools import delete_files_in_folder
 from markdown_tools import process_markdown
 from process_chunks import process_chunks
 
 app = Flask(__name__)
+CORS(app)
 
 
 @app.route("/upload", methods=["POST"])
@@ -39,7 +41,7 @@ def process_markdown_route():
         return jsonify({"error": "Missing 'files' parameter"}), 400
 
     except Exception as e:
-        return jsonify({"uploaded": False, "description": str(e)})
+        return jsonify({"error on upload api": str(e)})
 
 
 if __name__ == "__main__":
