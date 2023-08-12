@@ -1,3 +1,3 @@
 import subprocess
 
-subprocess.run(["python3", "src/scan_local_folder.py"])
+subprocess.run(["python3", "api/api_upload_files.py"])

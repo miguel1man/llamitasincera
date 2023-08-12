@@ -9,7 +9,6 @@ def get_markdown_documents(file_path):
             text = f.read()
             file_name = os.path.basename(file_path)
             md_docs.append({"file": file_name, "text": text})
-        print("markdown document:", md_docs)
         return md_docs
 
     except Exception as e:
@@ -30,7 +29,6 @@ def markdown_splitter(md_docs):
             headers_to_split_on=headers_to_split_on
         )
         markdown_split_results = md_splitter.split_text(md_docs)
-        print("markdown_split_results", markdown_split_results)
 
         return markdown_split_results
 
