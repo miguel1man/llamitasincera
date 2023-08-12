@@ -2,7 +2,7 @@ from langchain.vectorstores import Chroma
 from embedding_manager import set_embedding
 from vector_db_manager import COLECCTION, DIRECTORY
 
-RESULTS = 1
+RESULTS = 2
 
 
 def vector_db_query(
