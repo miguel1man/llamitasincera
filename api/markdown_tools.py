@@ -53,7 +53,7 @@ def process_markdown(file_path):
                 }
             )
 
-        print("processed_markdown:", processed_markdown)
+        # print("processed_markdown:", processed_markdown)
         return processed_markdown
 
     except Exception as e:

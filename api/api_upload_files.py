@@ -9,7 +9,7 @@ app = Flask(__name__)
 CORS(app)
 
 
-@app.route("/upload", methods=["POST"])
+@app.route("/api/upload-files", methods=["POST"])
 def process_markdown_route():
     try:
         FOLDER_PATH = "uploads"
@@ -45,4 +45,4 @@ def process_markdown_route():
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(port=5002, debug=True)

@@ -5,11 +5,11 @@
 	async function fetchData(question: string) {
 		try {
 			const response = await fetch(
-				`http://localhost:5000/api/llamacpp?question=${encodeURIComponent(question)}`
+				`http://localhost:5001/api/ask-llama?question=${encodeURIComponent(question)}`
 			);
 
 			if (!response.body) {
-				console.log("no body")
+				console.log("No API response.")
 				return
 			}
 			const reader = response.body.getReader();
@@ -26,6 +26,7 @@
 				const chunkText = decoder.decode(value);
 				console.log("chunkText:", chunkText);
 				chunks = [...chunks, chunkText]
+				console.log("chunks:", chunks);
 
 				await readChunk();
 			};
@@ -55,9 +56,9 @@
 		/>
 		<button class="variant-filled-primary" on:click={() => fetchData(currentMessage)}>Send</button>
 	</div>
-	<pre>
+	<card>
     {#each chunks as chunk}
       {chunk}
     {/each}
-  </pre>
+  </card>
 </div>

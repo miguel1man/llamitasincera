@@ -6,7 +6,7 @@ app = Flask(__name__)
 CORS(app)
 
 
-@app.route("/api/llamacpp")
+@app.route("/api/ask-llama")
 def stream_response():
     question = request.args.get("question")
 
@@ -19,4 +19,4 @@ def stream_response():
 
 
 if __name__ == "__main__":
-    app.run()
+    app.run(port=5001, debug=True)
