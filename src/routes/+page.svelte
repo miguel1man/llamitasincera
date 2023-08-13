@@ -1,12 +1,41 @@
 <script lang="ts">
-	import { getLlamaCppResponse } from '../services/askLlama';
-
 	let currentMessage = '';
-	async function onClickHandler(question: string) {
-		console.log("question:", question)
-		const response = await getLlamaCppResponse(question)
-		console.log("response:", response)
+	let chunks: any = []
+	
+	async function fetchData(question: string) {
+		try {
+			const response = await fetch(
+				`http://localhost:5000/api/llamacpp?question=${encodeURIComponent(question)}`
+			);
+
+			if (!response.body) {
+				console.log("no body")
+				return
+			}
+			const reader = response.body.getReader();
+			const decoder = new TextDecoder();
+
+			const readChunk = async () => {
+				const { done, value } = await reader.read();
+
+				if (done) {
+					console.log("Stream completo");
+					return;
+				}
+
+				const chunkText = decoder.decode(value);
+				console.log("chunkText:", chunkText);
+				chunks = [...chunks, chunkText]
+
+				await readChunk();
+			};
+
+			await readChunk();
+		} catch (e) {
+			console.error("Error fetching data:", e);
+		}
 	}
+	
 </script>
 
 <div class="container h-full mx-auto flex flex-col justify-center items-center space-y-20">
@@ -24,6 +53,11 @@
 			placeholder="Write a message..."
 			rows="1"
 		/>
-		<button class="variant-filled-primary" on:click={() => onClickHandler(currentMessage)}>Send</button>
-	</div>			
+		<button class="variant-filled-primary" on:click={() => fetchData(currentMessage)}>Send</button>
+	</div>
+	<pre>
+    {#each chunks as chunk}
+      {chunk}
+    {/each}
+  </pre>
 </div>
