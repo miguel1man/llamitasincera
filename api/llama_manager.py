@@ -3,7 +3,7 @@ from langchain import PromptTemplate, LLMChain
 from langchain.callbacks.manager import CallbackManager
 from langchain.callbacks.streaming_stdout import StreamingStdOutCallbackHandler
 
-template = """
+template_data = """
 Pregunta:
 {question}
 Respuesta: 
@@ -11,7 +11,7 @@ Responde en idioma español únicamente utilizando estos datos como respuesta, n
 {answer_data}"""
 
 
-def llama_manager(question, answer_data, template):
+def llama_manager(question, answer_data, template=template_data):
     try:
         prompt = PromptTemplate(
             template=template,
@@ -41,7 +41,14 @@ def llama_manager(question, answer_data, template):
         print(f"Error on llm processing: {e}")
 
 
-def llama_manager_question(question, template):
+template_question = """
+Pregunta:
+{question}
+Respuesta: 
+Responde en idioma español."""
+
+
+def llama_manager_question(question, template=template_question):
     try:
         prompt = PromptTemplate(
             template=template,
@@ -64,7 +71,14 @@ def llama_manager_question(question, template):
         inputs = {
             "question": question,
         }
-        llm_chain.run(inputs)
+        return llm_chain.run(inputs)
 
     except Exception as e:
         print(f"Error on llm processing: {e}")
+
+
+""" 
+llama_manager_question(
+    "Escribe 3 slogan para una app de IA llamada Llamita sincera, que es una app basada en el LLM llama y solo responde con datos que tú le has entrenado, por eso es sincera."
+)
+ """
