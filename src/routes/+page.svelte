@@ -1,8 +1,15 @@
 <script lang="ts">
+	import { SlideToggle } from '@skeletonlabs/skeleton';
+
 	let currentMessage = ''
 	let chunks: any = []
 	let messages: { content: string; isQuestion: boolean }[] = []
-	
+	let isShowSourcesMode = false;
+
+  function toggleMode() {
+    isShowSourcesMode = !isShowSourcesMode;
+  }
+
 	async function handleChatQuestion(question: string) {
 		try {
 			const newQuestion: { content: string; isQuestion: boolean } = {
@@ -71,7 +78,7 @@
       {/each}
 		</div>
 
-		<div class="input-group input-group-divider grid-cols-[auto_1fr_auto] rounded-container-token mt-4">
+		<div class="input-group input-group-divider grid-cols-[auto_1fr_auto] rounded-container-token my-2">
 			<button class="input-group-shim">+</button>
 			<textarea
 				bind:value={currentMessage}
@@ -88,6 +95,16 @@
 			>
 				Send
 			</button>
-		</div>	
+		</div>
+
+		<div class="flex justify-center">
+			<SlideToggle name="slider-label" checked={isShowSourcesMode} active="bg-primary-500" on:click={toggleMode}>
+				{#if isShowSourcesMode}
+					Show Sources
+				{:else}
+					Quick Chat
+				{/if}
+			</SlideToggle>
+		</div>
 	</div>
 </div>

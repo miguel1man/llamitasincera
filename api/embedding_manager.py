@@ -3,8 +3,8 @@ from sentence_transformers import SentenceTransformer
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 
 models = {
-    "mpnet": "paraphrase-multilingual-mpnet-base-v2",
     "minilm": "paraphrase-multilingual-MiniLM-L12-v2",
+    "mpnet": "paraphrase-multilingual-mpnet-base-v2",
 }
 
 

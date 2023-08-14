@@ -1,12 +1,12 @@
 from langchain.vectorstores import Chroma
 from embedding_manager import set_embedding
-from vector_db_manager import COLECCTION, DIRECTORY
+from vector_db_manager import INDEX_NAME, INDEX_PATH
 
 RESULTS = 2
 
 
 def vector_db_query(
-    query_text, collection=COLECCTION, directory=DIRECTORY, results=RESULTS
+    query_text, collection=INDEX_NAME, directory=INDEX_PATH, results=RESULTS
 ):
     vectordb = Chroma(
         collection_name=collection,
@@ -14,10 +14,9 @@ def vector_db_query(
         persist_directory=directory,
     )
 
-    # docs = vectordb.similarity_search(query="", k=4, filter={"file": filter_text})
-    docs = vectordb.similarity_search(query=query_text, k=results)
+    docs = vectordb.similarity_search_with_score(query=query_text, k=results)
     return docs
 
 
-# question = vector_db_query("¿qué es inteligencia artificial?")
-# print("answer:", question)
+question = vector_db_query("La filosofía es...")
+print("answer:", question)

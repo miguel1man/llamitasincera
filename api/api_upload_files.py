@@ -12,7 +12,7 @@ CORS(app)
 @app.route("/api/upload-files", methods=["POST"])
 def upload_files():
     try:
-        FOLDER_PATH = "uploads"
+        FOLDER_PATH = "temp_uploads"
 
         if not os.path.exists(FOLDER_PATH):
             os.makedirs(FOLDER_PATH)

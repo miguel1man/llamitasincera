@@ -45,7 +45,7 @@ template_question = """
 Pregunta:
 {question}
 Respuesta: 
-Responde en idioma español."""
+Responde en idioma español de manera muy concisa."""
 
 
 def llama_manager_question(question, template=template_question):
@@ -79,7 +79,7 @@ def llama_manager_question(question, template=template_question):
 
 """ 
 llama_manager_question(
-    "Escribe 3 slogan para una app de IA llamada Llamita sincera, que es una app basada en el LLM llama y solo responde con datos que tú le has entrenado, por eso es sincera."
+    "¿Qué es inteligencia artificial?"
 )
 import requests
 
