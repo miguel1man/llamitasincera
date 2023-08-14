@@ -81,4 +81,13 @@ def llama_manager_question(question, template=template_question):
 llama_manager_question(
     "Escribe 3 slogan para una app de IA llamada Llamita sincera, que es una app basada en el LLM llama y solo responde con datos que tú le has entrenado, por eso es sincera."
 )
+import requests
+
+resp = requests.get(
+    "http://localhost:5001/api/ask-llama",
+    params={"question": "¿Cuándo se independizó el Perú?"},
+    stream=True,
+)
+for word in resp.iter_lines():
+    print(word)
  """

@@ -1,17 +1,12 @@
 <script lang='ts'>
-	// The ordering of these imports is critical to your app working properly
-	import '@skeletonlabs/skeleton/themes/theme-crimson.css';
-	// If you have source.organizeImports set to true in VSCode, then it will auto change this ordering
-	import '@skeletonlabs/skeleton/styles/skeleton.css';
-	// Most of your app wide CSS should be put in this file
-	import '../app.postcss';
-	import { AppShell, AppBar } from '@skeletonlabs/skeleton';
+	import '@skeletonlabs/skeleton/themes/theme-crimson.css'
+	import '@skeletonlabs/skeleton/styles/skeleton.css'
+	import '../app.postcss'
+	import { AppShell, AppBar } from '@skeletonlabs/skeleton'
 </script>
 
-<!-- App Shell -->
 <AppShell>
 	<svelte:fragment slot="header">
-		<!-- App Bar -->
 		<AppBar>
 			<svelte:fragment slot="lead">
 				<strong class="text-xl uppercase">Llamita Sincera</strong>
@@ -25,9 +20,9 @@
 				</a>
 				<a
 					class="btn btn-sm variant-ghost-surface"
-					href="/data"
+					href="/train"
 				>
-					Data
+					Train
 				</a>
 				<a
 					class="btn btn-sm variant-ghost-surface"
@@ -35,11 +30,22 @@
 					target="_blank"
 					rel="noreferrer"
 				>
-					Source code
+					<svg 
+						class="h-5 w-5 text-red-500"  
+						viewBox="0 0 24 24"  
+						fill="none"  
+						stroke="white"  
+						stroke-width="2"  
+						stroke-linecap="round"  
+						stroke-linejoin="round"
+					>  
+						<path 
+							d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"
+						/>
+					</svg>
 				</a>
 			</svelte:fragment>
 		</AppBar>
 	</svelte:fragment>
-	<!-- Page Route Content -->
 	<slot />
 </AppShell>

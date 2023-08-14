@@ -1,64 +1,93 @@
 <script lang="ts">
-	let currentMessage = '';
+	let currentMessage = ''
 	let chunks: any = []
+	let messages: { content: string; isQuestion: boolean }[] = []
 	
-	async function fetchData(question: string) {
+	async function handleChatQuestion(question: string) {
 		try {
+			const newQuestion: { content: string; isQuestion: boolean } = {
+        content: question,
+        isQuestion: true,
+      }
+
+      messages = [...messages, newQuestion]
+
 			const response = await fetch(
-				`http://localhost:5001/api/ask-llama?question=${encodeURIComponent(question)}`
-			);
+				`http://localhost:5001/api/chat-llama?question=${encodeURIComponent(question)}`
+			)
 
 			if (!response.body) {
 				console.log("No API response.")
 				return
 			}
-			const reader = response.body.getReader();
-			const decoder = new TextDecoder();
+			const reader = response.body.getReader()
+			const decoder = new TextDecoder()
 
 			const readChunk = async () => {
-				const { done, value } = await reader.read();
+				const { done, value } = await reader.read()
 
 				if (done) {
-					console.log("Stream completo");
-					return;
+					console.log("Completed stream")
+					return
 				}
 
-				const chunkText = decoder.decode(value);
-				console.log("chunkText:", chunkText);
+				const chunkText = decoder.decode(value)
+				console.log("chunkText:", chunkText)
+				
+				const newAnswer: { content: string; isQuestion: boolean } = {
+          content: chunkText,
+          isQuestion: false,
+        }
+
+        messages = [...messages, newAnswer]
+				
 				chunks = [...chunks, chunkText]
-				console.log("chunks:", chunks);
 
-				await readChunk();
-			};
 
-			await readChunk();
+				await readChunk()
+			}
+
+			await readChunk()
 		} catch (e) {
-			console.error("Error fetching data:", e);
+			console.error("Error handling question:", e)
 		}
 	}
 	
 </script>
 
 <div class="container h-full mx-auto flex flex-col justify-center items-center space-y-20">
-	<div class="space-y-10 text-center flex flex-col items-center">
-		<h2 class="h2">Chat with a llama</h2>
-	</div>
+	<div class="min-w-[50em] max-w-lg mx-auto">
+		<div class="flex flex-col justify-end space-y-2">
+			{#each messages as message (message.content)}
+        <div
+          class="flex justify-{message.isQuestion ? 'end' : 'start'} space-x-2"
+        >
+          <div
+            class="card p-4 rounded-{message.isQuestion ? 'tr' : 'tl'}-none space-y-2 {message.isQuestion ? 'variant-primary' : 'variant-soft-secondary'}"
+          >
+            <p>{message.content}</p>
+          </div>
+        </div>
+      {/each}
+		</div>
 
-	<div class="input-group input-group-divider grid-cols-[auto_1fr_auto] rounded-container-token">
-		<button class="input-group-shim">+</button>
-		<textarea
-			bind:value={currentMessage}
-			class="bg-transparent border-0 ring-0"
-			name="prompt"
-			id="prompt"
-			placeholder="Write a message..."
-			rows="1"
-		/>
-		<button class="variant-filled-primary" on:click={() => fetchData(currentMessage)}>Send</button>
+		<div class="input-group input-group-divider grid-cols-[auto_1fr_auto] rounded-container-token mt-4">
+			<button class="input-group-shim">+</button>
+			<textarea
+				bind:value={currentMessage}
+				class="bg-transparent border-0 ring-0"
+				name="prompt"
+				id="prompt"
+				placeholder="Write a message..."
+				rows="1"
+			/>
+			<button class="variant-filled-primary" on:click={() => {
+					handleChatQuestion(currentMessage)
+					currentMessage = ''
+				}}
+			>
+				Send
+			</button>
+		</div>	
 	</div>
-	<card>
-    {#each chunks as chunk}
-      {chunk}
-    {/each}
-  </card>
 </div>

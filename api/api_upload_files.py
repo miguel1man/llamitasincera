@@ -10,7 +10,7 @@ CORS(app)
 
 
 @app.route("/api/upload-files", methods=["POST"])
-def process_markdown_route():
+def upload_files():
     try:
         FOLDER_PATH = "uploads"
 
@@ -38,10 +38,10 @@ def process_markdown_route():
         return jsonify(response)
 
     except KeyError:
-        return jsonify({"error": "Missing 'files' parameter"}), 400
+        return jsonify({"Missing parameter: files"}), 400
 
     except Exception as e:
-        return jsonify({"error on upload api": str(e)})
+        return jsonify({"Error uploading files to api": str(e)})
 
 
 if __name__ == "__main__":

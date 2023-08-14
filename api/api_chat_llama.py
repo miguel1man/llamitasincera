@@ -6,8 +6,8 @@ app = Flask(__name__)
 CORS(app)
 
 
-@app.route("/api/ask-llama")
-def stream_response():
+@app.route("/api/chat-llama")
+def chat_llama():
     question = request.args.get("question")
 
     def generate():
