@@ -1,63 +1,32 @@
 <script lang="ts">
-	import { SlideToggle } from '@skeletonlabs/skeleton';
+	import type { Chunk, Message } from '../types/index'
+	import { SlideToggle } from '@skeletonlabs/skeleton'
+	import { handleChatQuestion } from '../services/apiChatLlama'
 
 	let currentMessage = ''
-	let chunks: any = []
-	let messages: { content: string; isQuestion: boolean }[] = []
-	let isShowSourcesMode = false;
+	let chunks: Chunk[] = []
+	let messages: Message[] = []
+	let isShowSourcesMode = false
 
   function toggleMode() {
-    isShowSourcesMode = !isShowSourcesMode;
+    isShowSourcesMode = !isShowSourcesMode
   }
 
-	async function handleChatQuestion(question: string) {
-		try {
-			const newQuestion: { content: string; isQuestion: boolean } = {
-        content: question,
+	async function sendMessage() {
+		const newQuestion: { content: string; isQuestion: boolean } = {
+        content: currentMessage,
         isQuestion: true,
       }
 
       messages = [...messages, newQuestion]
+		const updatedChunks = await handleChatQuestion(currentMessage, chunks)
+		const newAnswer: Message = {
+        content: updatedChunks,
+        isQuestion: false,
+      }
 
-			const response = await fetch(
-				`http://localhost:6757/api/chat-llama?question=${encodeURIComponent(question)}`
-			)
-
-			if (!response.body) {
-				console.log("No API response.")
-				return
-			}
-			const reader = response.body.getReader()
-			const decoder = new TextDecoder()
-
-			const readChunk = async () => {
-				const { done, value } = await reader.read()
-
-				if (done) {
-					console.log("Completed stream")
-					return
-				}
-
-				const chunkText = decoder.decode(value)
-				console.log("chunkText:", chunkText)
-				
-				const newAnswer: { content: string; isQuestion: boolean } = {
-          content: chunkText,
-          isQuestion: false,
-        }
-
-        messages = [...messages, newAnswer]
-				
-				chunks = [...chunks, chunkText]
-
-
-				await readChunk()
-			}
-
-			await readChunk()
-		} catch (e) {
-			console.error("Error handling question:", e)
-		}
+    messages = [...messages, newAnswer]
+		currentMessage = ''
 	}
 	
 </script>
@@ -66,19 +35,15 @@
 	<div class="min-w-[50em] max-w-lg mx-auto">
 		<div class="flex flex-col justify-end space-y-2">
 			{#each messages as message (message.content)}
-        <div
-          class="flex justify-{message.isQuestion ? 'end' : 'start'} space-x-2"
-        >
-          <div
-            class="card p-4 rounded-{message.isQuestion ? 'tr' : 'tl'}-none space-y-2 {message.isQuestion ? 'variant-primary' : 'variant-soft-secondary'}"
-          >
+        <div class="flex justify-{message.isQuestion ? 'end' : 'start'} space-x-2">
+          <div class="card p-4 rounded-{message.isQuestion ? 'tr' : 'tl'}-none space-y-2 {message.isQuestion ? 'variant-primary' : 'variant-soft-secondary'}">
             <p>{message.content}</p>
           </div>
         </div>
       {/each}
 		</div>
 
-		<div class="input-group input-group-divider grid-cols-[auto_1fr_auto] rounded-container-token my-2">
+		<div class="input-group input-group-divider grid-cols-[auto_1fr_auto] rounded-container-token my-3">
 			<button class="input-group-shim">+</button>
 			<textarea
 				bind:value={currentMessage}
@@ -88,10 +53,7 @@
 				placeholder="Write a message..."
 				rows="1"
 			/>
-			<button class="variant-filled-primary" on:click={() => {
-					handleChatQuestion(currentMessage)
-					currentMessage = ''
-				}}
+			<button class="variant-filled-primary" on:click={sendMessage}
 			>
 				Send
 			</button>
