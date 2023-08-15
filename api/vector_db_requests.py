@@ -18,5 +18,7 @@ def vector_db_query(
     return docs
 
 
+""" 
 question = vector_db_query("La filosofía es...")
 print("answer:", question)
+ """

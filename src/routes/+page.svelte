@@ -20,7 +20,7 @@
       messages = [...messages, newQuestion]
 
 			const response = await fetch(
-				`http://localhost:5001/api/chat-llama?question=${encodeURIComponent(question)}`
+				`http://localhost:6757/api/chat-llama?question=${encodeURIComponent(question)}`
 			)
 
 			if (!response.body) {

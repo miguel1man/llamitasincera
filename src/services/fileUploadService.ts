@@ -10,7 +10,7 @@ export async function uploadFiles(files: FileList | null): Promise<any[]> {
 	}
 
 	try {
-		const response = await fetch("http://localhost:5002/api/upload-files", {
+		const response = await fetch("http://localhost:6757/api/upload-files", {
 			method: "POST",
 			body: formData,
 		});
