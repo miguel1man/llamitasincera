@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { askVectorDB } from '../../services/askVectorDB';
+	import { apiVectorDB } from '../../services/apiVectorDB';
 	let currentMessage = '';
 	let vectorDBResponse: any;
 	const id: string = "qwerty"
@@ -7,7 +7,7 @@
 
 	async function onClickHandler(question: string, id: string) {
 		console.log("currentMessage:", currentMessage)
-  	vectorDBResponse = await askVectorDB(question, id);
+  	vectorDBResponse = await apiVectorDB(question, id);
 		console.log("vectorDBResponse:", vectorDBResponse)
 		
 		const answerId: string = vectorDBResponse.id
