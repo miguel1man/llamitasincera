@@ -1,23 +1,15 @@
 <script lang="ts">
 	import { FileDropzone } from '@skeletonlabs/skeleton'
-	import { uploadFiles } from '../../services/fileUploadService'
+	import { uploadFiles } from '../../services/apiUploadFile'
 	import { Table, tableMapperValues } from '@skeletonlabs/skeleton'
 	import type { TableSource } from '@skeletonlabs/skeleton'
-		
+	// import { mockFiles } from '../../utils/mockData'
+
 	let files: FileList | null = null
-	let uploadResponse: any[] = [
-		/* {
-			file: "archivo-001.txt",
-			uploaded: true
-		},
-		{
-			file: "archivo-002.pdf",
-			uploaded: true
-		} */
-	]
+	let uploadResponse: any[] = []
 	let tableSource: TableSource = {
 		head: ['File', 'Uploaded'],
-		body: []
+		body: tableMapperValues(uploadResponse, ["file", "uploaded"])
 	}
 
 	async function onChangeHandler(event: Event) {

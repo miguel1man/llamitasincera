@@ -1,45 +1,20 @@
 <script lang="ts">
 	import type { Chunk, Message, ResponseData } from '../types/index'
+	import { onMount } from 'svelte'
 	import { SlideToggle } from '@skeletonlabs/skeleton'
 	import { handleChatQuestion } from '../services/apiChatLlama'
 	import { apiVectorDB } from '../services/apiVectorDB'
 	import TreeViewSource from '../components/TreeViewSource.svelte'
+	import { fetchModelFiles } from '../services/apigetModels'
+	// import { mockMessages, mockSources } from '../utils/mockData'
 
 	let currentMessage = ''
 	let chunks: Chunk[] = []
-	let messages: Message[] = [
-		/* {
-			content: "test question 1",
-			isQuestion: true
-		},
-		{
-			content: "test answer 1",
-			isQuestion: false
-		} */
-	]
+	let messageContainer:any
 	let isShowSourcesMode = false
 	let isShowConfig = false
+	let messages: Message[] = []
   let responseData: ResponseData | null = null
-		/* {
-			content: [
-				{
-					metadata: {
-						file: "file name 001.txt",
-						header: "header text 01"
-					},
-					score: 19.82347,
-					text: "lorem ipsum lorem ipsum lorem ipsum lorem ipsum"
-				},
-				{
-					metadata: {
-						file: "file test 002.pdf"
-					},
-					score: 5.82347,
-					text: "lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum"
-				}
-			],
-			id: 'id_1'
-		} */
 
 	function showConfig() {
 		isShowConfig = !isShowConfig
@@ -50,6 +25,8 @@
   }
 
 	async function sendMessage() {
+		if (currentMessage.length === 0) return
+
 		const newQuestion: Message = {
 			content: currentMessage,
 			isQuestion: true,
@@ -68,31 +45,42 @@
 
     messages = [...messages, newAnswer]
 		currentMessage = ''
+		messageContainer.scrollTop = messageContainer.scrollHeight
 	}
+
+	let modelFiles = [];
+
+  onMount(async () => {
+    modelFiles = await fetchModelFiles();
+    console.log('modelFiles 2:', modelFiles);
+  })
 </script>
 
 <main class="my-2 mx-auto flex flex-col justify-center items-center space-y-20">
 	<section class="max-w-screen-lg md:max-w-screen-xl xl:max-w-[100em] grid gap-4 {isShowConfig ? 'lg:grid-cols-2' : 'lg:grid-cols-1'}">
 		
 		{#if isShowConfig}
-		<section class="card rounded-[0.75em] bg-tertiary-500 bg-opacity-10 space-y-2 p-2 w-full mt-4 lg:mt-0">
-			<SlideToggle name="slider-sources" checked={isShowSourcesMode} background="bg-secondary-800" active="bg-primary-500" on:click={toggleSourceMode}>
-				{#if isShowSourcesMode}
-					Show Sources
-				{:else}
-					Quick Chat
+			<section class="card rounded-[0.75em] bg-tertiary-500 bg-opacity-10 space-y-2 p-2 w-full mt-4 lg:mt-0">
+				<section class="flex flex-row items-center gap-4">
+					<p class="font-bold">Chat mode:</p>
+					<SlideToggle name="slider-sources" checked={isShowSourcesMode} background="bg-secondary-800" active="bg-primary-500" on:click={toggleSourceMode}>
+						{#if isShowSourcesMode}
+							<p>Show sources</p>
+						{:else}
+							<p>Quick chat</p>
+						{/if}
+					</SlideToggle>
+				</section>
+				{#if responseData}
+					<section class="h-[calc(100vh-10em)] overflow-y-auto">
+						<TreeViewSource responseData={responseData}/>
+					</section>
 				{/if}
-			</SlideToggle>
-			{#if responseData}
-			<section class="h-[calc(100vh-10em)] overflow-y-auto">
-				<TreeViewSource responseData={responseData}/>
 			</section>
-			{/if}
-		</section>
 		{/if}
 		
 		<div class="card rounded-[0.75em] xl:w-[40em] bg-tertiary-500 bg-opacity-10 space-y-2 p-2">
-			<div class="h-[calc(100vh-10em)] flex flex-col space-y-2 overflow-y-auto">
+			<div class="h-[calc(100vh-10em)] flex flex-col space-y-2 overflow-y-auto" bind:this={messageContainer}>
 				{#each messages as message (message.content)}
 				<div class="card p-4 max-w-[95%] rounded-[0.75em] {message.isQuestion 
 					? 'variant-soft-tertiary rounded-tr-none ml-auto justify-end' 
@@ -103,7 +91,7 @@
 			</div>
 
 			<div class="input-group input-group-divider grid-cols-[auto_1fr_auto] rounded-[0.5em] gap-4">
-				<button class="input-group-shim bg-primary-600" on:click={showConfig}>
+				<button class="input-group-shim" on:click={showConfig} style="color: rgb(var(--color-secondary-500));">
 					{#if isShowConfig}
 						-
 					{:else}
@@ -123,5 +111,6 @@
 				</button>
 			</div>
 		</div>
+
 	</section>
 </main>

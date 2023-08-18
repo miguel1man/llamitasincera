@@ -12,6 +12,14 @@ app = Flask(__name__)
 CORS(app)
 
 
+@app.route("/api/get-models", methods=["GET"])
+def get_model_files():
+    model_files = [
+        filename for filename in os.listdir("models") if filename.endswith(".bin")
+    ]
+    return jsonify(model_files)
+
+
 @app.route("/api/chat-llama")
 def chat_llama():
     question = request.args.get("question")
