@@ -13,7 +13,7 @@ interface Message {
 
 interface Metadata {
   file: string
-  header: string
+  header?: string
 }
 
 interface ResponseData {
