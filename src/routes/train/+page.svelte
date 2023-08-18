@@ -5,7 +5,16 @@
 	import type { TableSource } from '@skeletonlabs/skeleton'
 		
 	let files: FileList | null = null
-	let uploadResponse: any[] = []
+	let uploadResponse: any[] = [
+		/* {
+			file: "archivo-001.txt",
+			uploaded: true
+		},
+		{
+			file: "archivo-002.pdf",
+			uploaded: true
+		} */
+	]
 	let tableSource: TableSource = {
 		head: ['File', 'Uploaded'],
 		body: []
@@ -25,19 +34,19 @@
 </script>
 
 <div class="container h-full mx-auto flex justify-center items-center py-16">
-	<div class="space-y-10 text-center flex flex-col items-center">
+	<div class="space-y-10 max-w-[36em] text-center flex flex-col items-center">
 
 			<h1 class="h1">
-				<span class="bg-gradient-to-br from-yellow-500 to-orange-500 bg-clip-text text-transparent box-decoration-clone">Train the AI with your data</span>
+				<span class="bg-gradient-to-br from-yellow-500 to-orange-500 bg-clip-text text-transparent box-decoration-clone">Drag and drop your files</span>
 			</h1>
 
 				<FileDropzone name="files" on:change={onChangeHandler} multiple>
-					<svelte:fragment slot="message">Drag and drop your files</svelte:fragment>
-					<svelte:fragment slot="meta">Supported files: pdf, word, md and txt.</svelte:fragment>
+					<svelte:fragment slot="message">Supported types</svelte:fragment>
+					<svelte:fragment slot="meta">pdf, doc, txt and md.</svelte:fragment>
 				</FileDropzone>
 
 			{#if uploadResponse.length > 0}
-				<div class="flex justify-center space-x-2">
+				<div class="space-x-2 w-full">
 					<Table source={tableSource} />
 				</div>
 			{/if}

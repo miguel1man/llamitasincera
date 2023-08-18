@@ -1,11 +1,9 @@
 <script lang="ts">
 	import type { Chunk, Message, ResponseData } from '../types/index'
 	import { SlideToggle } from '@skeletonlabs/skeleton'
-	import { TreeView, TreeViewItem } from '@skeletonlabs/skeleton'
-	import { ProgressRadial } from '@skeletonlabs/skeleton'
 	import { handleChatQuestion } from '../services/apiChatLlama'
 	import { apiVectorDB } from '../services/apiVectorDB'
-	import vectorSimilarity from '../lib/vectorSimilarity'
+	import TreeViewSource from '../components/TreeViewSource.svelte'
 
 	let currentMessage = ''
 	let chunks: Chunk[] = []
@@ -59,8 +57,7 @@
     messages = [...messages, newQuestion]
 		
 		if (isShowSourcesMode) {
-			responseData = await apiVectorDB(currentMessage, "id_1")
-			// console.log("responseData:", responseData)
+			responseData = await apiVectorDB(currentMessage, "id_001")
 		}
 
 		const updatedChunks = await handleChatQuestion(currentMessage, chunks)
@@ -87,26 +84,8 @@
 				{/if}
 			</SlideToggle>
 			{#if responseData}
-			<section>
-				{#each responseData.content as item (item.metadata.file)}
-				<TreeView>
-					<TreeViewItem open={true}>
-					<h6>{item.metadata.file}</h6>
-					<svelte:fragment slot="children">
-						<article class="mt-2 mb-4 space-y-2 p-4 rounded-[0.5em]">
-							<div class="w-full flex flex-direction-row items-center gap-2">
-								Score:
-								<ProgressRadial width="w-9" font={180} value={vectorSimilarity(item.score)}>{vectorSimilarity(item.score)}%</ProgressRadial>
-							</div>
-							{#if item.metadata.header}
-								<p class={"font-bold"}>{item.metadata.header}</p>
-							{/if}
-							<p>{item.text}</p>
-						</article>
-					</svelte:fragment>
-					</TreeViewItem>
-				</TreeView>
-				{/each}
+			<section class="h-[calc(100vh-10em)] overflow-y-auto">
+				<TreeViewSource responseData={responseData}/>
 			</section>
 			{/if}
 		</section>
@@ -124,7 +103,7 @@
 			</div>
 
 			<div class="input-group input-group-divider grid-cols-[auto_1fr_auto] rounded-[0.5em] gap-4">
-				<button class="input-group-shim" on:click={showConfig}>
+				<button class="input-group-shim bg-primary-600" on:click={showConfig}>
 					{#if isShowConfig}
 						-
 					{:else}
@@ -139,30 +118,10 @@
 					placeholder="Write a question..."
 					rows="1"
 				/>
-				<button class="variant-filled-primary" on:click={sendMessage}>
+				<button class="variant-filled-secondary" on:click={sendMessage}>
 					Send
 				</button>
 			</div>
 		</div>
 	</section>
 </main>
-
-<style>
-	:global(summary) {
-		background-color: rgb(var(--color-secondary-900));
-		margin-bottom: 0.5em;
-	}
-
-	:global(summary):hover {
-		background-color: rgb(var(--color-secondary-800)) !important;
-	}
-
-	:global(summary.rounded-container-token) {
-		border-radius: 0.5em;
-	}
-
-	:global(.tree-item article) {
-		background-color: rgb(var(--color-secondary-700) / var(--tw-bg-opacity));
-	}
-	
-</style>
