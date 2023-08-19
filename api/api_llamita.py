@@ -3,7 +3,7 @@ import os
 from flask import Flask, jsonify, request, Response
 from flask_cors import CORS
 from file_tools import delete_files_in_folder
-from llama_manager import llama_manager_question
+from llama_manager import llm_question, llm_vector_similarity
 from markdown_tools import process_markdown
 from process_chunks import process_chunks
 from vector_db_requests import vector_db_query
@@ -26,7 +26,7 @@ def chat_llama():
     model_name = request.args.get("model_name")
 
     def generate():
-        response = llama_manager_question(question, model_name)
+        response = llm_question(question, model_name)
         for word in response.split():
             yield word + "\n"
 
@@ -90,6 +90,32 @@ def similar_embeddings():
     response_with_id = {"id": question_id, "content": response_list}
 
     return jsonify(response_with_id)
+
+
+@app.route("/api/chat-similarity")
+def chat_similarity():
+    question = request.args.get("question")
+    model_name = request.args.get("model_name")
+    answer_data = vector_db_query(question)
+    unique_responses = set()
+    response_list = []
+
+    for doc, score in answer_data:
+        res_dict = {"text": doc.page_content, "metadata": doc.metadata, "score": score}
+        res_json = json.dumps(res_dict, sort_keys=True)
+
+        if res_json not in unique_responses:
+            unique_responses.add(res_json)
+            response_list.append(res_dict)
+
+    print("response_list:", response_list)
+
+    def generate_similarity():
+        response = llm_vector_similarity(question, response_list, model_name)
+        for word in response.split():
+            yield word + "\n"
+
+    return Response(generate_similarity(), mimetype="text/plain")
 
 
 if __name__ == "__main__":

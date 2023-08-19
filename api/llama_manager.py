@@ -11,7 +11,7 @@ Responde en idioma español únicamente utilizando estos datos como respuesta, n
 {answer_data}"""
 
 
-def llama_manager(question, answer_data, template=template_data):
+def llm_vector_similarity(question, answer_data, model_name, template=template_data):
     try:
         prompt = PromptTemplate(
             template=template,
@@ -24,7 +24,7 @@ def llama_manager(question, answer_data, template=template_data):
             callback_manager=callback_manager,
             max_tokens=4096,
             n_ctx=2048,
-            model_path="models/orca-mini-7b.ggmlv3.q4_1.bin",
+            model_path=f"models/{model_name}",
             temperature=0,
             verbose=True,
         )
@@ -48,7 +48,7 @@ Respuesta:
 Responde en idioma español de manera muy concisa."""
 
 
-def llama_manager_question(question, model_name, template=template_question):
+def llm_question(question, model_name, template=template_question):
     try:
         prompt = PromptTemplate(
             template=template,
@@ -75,19 +75,3 @@ def llama_manager_question(question, model_name, template=template_question):
 
     except Exception as e:
         print(f"Error on llm processing: {e}")
-
-
-""" 
-llama_manager_question(
-    "¿Qué es inteligencia artificial?"
-)
-import requests
-
-resp = requests.get(
-    "http://localhost:5001/api/ask-llama",
-    params={"question": "¿Cuándo se independizó el Perú?"},
-    stream=True,
-)
-for word in resp.iter_lines():
-    print(word)
- """
