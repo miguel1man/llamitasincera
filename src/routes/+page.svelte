@@ -15,6 +15,8 @@
 	let isShowConfig = false
 	let messages: Message[] = []
   let responseData: ResponseData | null = null
+	let modelFiles: string[] = []
+	let modelName: string
 
 	function showConfig() {
 		isShowConfig = !isShowConfig
@@ -23,6 +25,10 @@
   function toggleSourceMode() {
     isShowSourcesMode = !isShowSourcesMode
   }
+
+	function changeModel(event: Event) {
+		modelName = (event.target as HTMLSelectElement).value
+	}
 
 	async function sendMessage() {
 		if (currentMessage.length === 0) return
@@ -37,7 +43,7 @@
 			responseData = await apiVectorDB(currentMessage, "id_001")
 		}
 
-		const updatedChunks = await handleChatQuestion(currentMessage, chunks)
+		const updatedChunks = await handleChatQuestion(currentMessage, modelName, chunks)
 		const newAnswer: Message = {
 			content: updatedChunks,
 			isQuestion: false,
@@ -48,11 +54,9 @@
 		messageContainer.scrollTop = messageContainer.scrollHeight
 	}
 
-	let modelFiles = [];
-
   onMount(async () => {
-    modelFiles = await fetchModelFiles();
-    console.log('modelFiles 2:', modelFiles);
+    modelFiles = await fetchModelFiles()
+		modelName = modelFiles[0]
   })
 </script>
 
@@ -60,8 +64,18 @@
 	<section class="max-w-screen-lg md:max-w-screen-xl xl:max-w-[100em] grid gap-4 {isShowConfig ? 'lg:grid-cols-2' : 'lg:grid-cols-1'}">
 		
 		{#if isShowConfig}
-			<section class="card rounded-[0.75em] bg-tertiary-500 bg-opacity-10 space-y-2 p-2 w-full mt-4 lg:mt-0">
-				<section class="flex flex-row items-center gap-4">
+			<section class="card rounded-[0.75em] bg-tertiary-500 bg-opacity-10 space-y-[1em] p-[1em] w-full mt-4 lg:mt-0">
+				
+				<section on:change={changeModel} class="flex flex-row items-center gap-[1em]">
+					<p class="font-bold">LLM:</p>
+					<select class="select max-w-[20em]">
+						{#each modelFiles as model}
+							<option value={model}>{model}</option>
+						{/each}
+					</select>
+				</section>
+
+				<section class="flex flex-row items-center gap-[1em]">
 					<p class="font-bold">Chat mode:</p>
 					<SlideToggle name="slider-sources" checked={isShowSourcesMode} background="bg-secondary-800" active="bg-primary-500" on:click={toggleSourceMode}>
 						{#if isShowSourcesMode}
@@ -71,11 +85,13 @@
 						{/if}
 					</SlideToggle>
 				</section>
+
 				{#if responseData}
 					<section class="h-[calc(100vh-10em)] overflow-y-auto">
 						<TreeViewSource responseData={responseData}/>
 					</section>
 				{/if}
+
 			</section>
 		{/if}
 		
@@ -106,7 +122,7 @@
 					placeholder="Write a question..."
 					rows="1"
 				/>
-				<button class="variant-filled-secondary" on:click={sendMessage}>
+				<button class="bg-secondary-800" on:click={sendMessage}>
 					Send
 				</button>
 			</div>

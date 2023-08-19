@@ -23,9 +23,10 @@ def get_model_files():
 @app.route("/api/chat-llama")
 def chat_llama():
     question = request.args.get("question")
+    model_name = request.args.get("model_name")
 
     def generate():
-        response = llama_manager_question(question)
+        response = llama_manager_question(question, model_name)
         for word in response.split():
             yield word + "\n"
 

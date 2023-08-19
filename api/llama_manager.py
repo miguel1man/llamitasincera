@@ -48,7 +48,7 @@ Respuesta:
 Responde en idioma español de manera muy concisa."""
 
 
-def llama_manager_question(question, template=template_question):
+def llama_manager_question(question, model_name, template=template_question):
     try:
         prompt = PromptTemplate(
             template=template,
@@ -61,7 +61,7 @@ def llama_manager_question(question, template=template_question):
             callback_manager=callback_manager,
             max_tokens=4096,
             n_ctx=2048,
-            model_path="models/orca-mini-7b.ggmlv3.q2_K.bin",
+            model_path=f"models/{model_name}",
             temperature=0,
             verbose=True,
         )

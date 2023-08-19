@@ -2,14 +2,16 @@ import type { Chunk } from '../types/index'
 
 async function handleChatQuestion(
   question: string,
+  model_name: string,
   chunks: Chunk[]
 ): Promise<string> {
   let chunkText = ''
+  console.log("modelName:", model_name)
 
   try {const response = await fetch(
       `http://localhost:6757/api/chat-llama?question=${encodeURIComponent(
         question
-      )}`
+      )}&model_name=${model_name}`
     )
 
     if (!response.body) {
