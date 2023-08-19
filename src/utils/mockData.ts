@@ -13,6 +13,27 @@ export const mockSources = {
 						file: "file test 002.pdf"
 					},
 					score: 5.82347,
+					text: "lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum"
+				},
+				{
+					metadata: {
+						file: "file test 003.pdf"
+					},
+					score: 8.7642,
+					text: "lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum"
+				},
+				{
+					metadata: {
+						file: "file test 004.pdf"
+					},
+					score: 2.34656,
+					text: "lorem ipsum lorem ipsum lorem ipsum lorem ipsum ipsum lorem ipsum"
+				},
+				{
+					metadata: {
+						file: "file test 005.pdf"
+					},
+					score: 16.749,
 					text: "lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum"
 				}
 			],

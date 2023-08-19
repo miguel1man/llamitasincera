@@ -6,7 +6,6 @@ async function handleChatQuestion(
   chunks: Chunk[]
 ): Promise<string> {
   let chunkText = ''
-  console.log("modelName:", model_name)
 
   try {const response = await fetch(
       `http://localhost:6757/api/chat-llama?question=${encodeURIComponent(
