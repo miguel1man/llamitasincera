@@ -1,6 +1,6 @@
 import type { Chunk } from '../types/index'
 
-async function handleChatQuestion(
+async function handleChatSources(
   question: string,
   model_name: string,
   chunks: Chunk[]
@@ -8,7 +8,7 @@ async function handleChatQuestion(
   let chunkText = ''
 
   try {const response = await fetch(
-      `http://localhost:6757/api/chat-llama?question=${encodeURIComponent(
+      `http://localhost:6757/api/chat-sources?question=${encodeURIComponent(
         question
       )}&model_name=${model_name}`
     )
@@ -45,4 +45,4 @@ async function handleChatQuestion(
   }
 }
 
-export { handleChatQuestion }
+export default handleChatSources

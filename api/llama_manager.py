@@ -27,6 +27,7 @@ def llm_vector_similarity(question, answer_data, model_name, template=template_d
             model_path=f"models/{model_name}",
             temperature=0,
             verbose=True,
+            streaming=True,
         )
 
         llm_chain = LLMChain(prompt=prompt, llm=llm)

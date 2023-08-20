@@ -1,4 +1,4 @@
-export async function apiVectorDB(question: string, id: string) {
+export async function getSimilarEmbeddings(question: string, id: string) {
   const url = `http://localhost:6757/api/similar-embeddings`
   const body = {
     question,

@@ -3,20 +3,25 @@
 	import { onMount } from 'svelte'
 	import { SlideToggle } from '@skeletonlabs/skeleton'
 	import { handleChatQuestion } from '../services/apiChatLlama'
-	import { apiVectorDB } from '../services/apiVectorDB'
+	import handleChatSources from '../services/apiChatSources'
+	import { getSimilarEmbeddings } from '../services/apiSimilarEmbeddings'
 	import SourcesTree from '../components/SourcesTree.svelte'
 	import { fetchModelFiles } from '../services/apiGetModels'
 	// import { mockMessages, mockSources } from '../utils/mockData'
 
 	let currentMessage = ''
 	let chunks: Chunk[] = []
-	let messageContainer:any
+	let messageContainer: HTMLDivElement | null = null
 	let isShowSourcesMode = false
 	let isShowConfig = false
 	let messages: Message[] = []
   let responseData: ResponseData | null = null
 	let modelFiles: string[] = []
 	let selectedModel: string
+	let updatedChunks: string
+	let messageCounter = 1
+
+	const newQuestionId = `id_${messageCounter}`
 
 	function showConfig() {
 		isShowConfig = !isShowConfig
@@ -33,25 +38,39 @@
 	async function sendMessage() {
 		if (currentMessage.length === 0) return
 
+		messageCounter++
+
 		const newQuestion: Message = {
 			content: currentMessage,
 			isQuestion: true,
+			id: newQuestionId
 		}
     messages = [...messages, newQuestion]
 		
+		messageCounter++
+
+		console.log('Consumiendo API:', newQuestionId)
 		if (isShowSourcesMode) {
-			responseData = await apiVectorDB(currentMessage, "id_001")
+			responseData = await getSimilarEmbeddings(currentMessage, newQuestionId)
+			console.log('isShowSourcesMode:', responseData)
+			updatedChunks = await handleChatSources(currentMessage, selectedModel, chunks)
+		} else {
+			updatedChunks = await handleChatQuestion(currentMessage, selectedModel, chunks)
+			console.log('no sources:', updatedChunks)
 		}
 
-		const updatedChunks = await handleChatQuestion(currentMessage, selectedModel, chunks)
 		const newAnswer: Message = {
 			content: updatedChunks,
 			isQuestion: false,
+			id: newQuestionId
 		}
 
     messages = [...messages, newAnswer]
 		currentMessage = ''
-		messageContainer.scrollTop = messageContainer.scrollHeight
+		messageContainer?.scrollTo({
+      top: messageContainer.scrollHeight,
+      behavior: 'smooth',
+    })
 	}
 
   onMount(async () => {
@@ -61,11 +80,11 @@
 </script>
 
 <main class="max-w-screen-xl mx-auto m-[1em] flex flex-col justify-center items-center space-y-[1em]">
-	<section class="grid gap-[1em] {isShowConfig ? 'lg:grid-cols-2' : 'lg:grid-cols-1'}">
+	<section class="grid gap-[0.5em] {isShowConfig ? 'lg:grid-cols-2' : 'lg:grid-cols-1'}">
 		
-		<div class="card lg:order-2 rounded-[0.75em] xl:w-[40em] bg-tertiary-500 bg-opacity-10 space-y-2 p-2">
-			<div class="h-[calc(100vh-11em)] flex flex-col space-y-2 overflow-y-auto" bind:this={messageContainer}>
-				{#each messages as message (message.content)}
+		<div class="card mx-[0.5em] p-[0.5em] rounded-[0.5em] space-y-[0.5em] md:{isShowConfig ? 'w-full' : 'max-w-[100%] w-[100%]'} lg:order-2 w-full max-w-[48em] xl:max-w-[64em] bg-tertiary-500 bg-opacity-10">
+			<div class="h-[calc(100vh-10em)] flex flex-col space-y-2 overflow-y-auto" bind:this={messageContainer}>
+				{#each messages as message, index (index)}
 				<div class="card p-4 max-w-[95%] rounded-[0.75em] {message.isQuestion 
 					? 'variant-soft-tertiary rounded-tr-none ml-auto justify-end' 
 					: 'variant-soft-secondary rounded-tl-none mr-auto justify-start'}">
@@ -75,7 +94,7 @@
 			</div>
 
 			<div class="input-group input-group-divider grid-cols-[auto_1fr_auto] rounded-[0.5em] gap-4">
-				<button class="input-group-shim" on:click={showConfig} style="color: rgb(var(--color-secondary-500));">
+				<button class="input-group-shim font-bold text-[1em]" on:click={showConfig} style="color: rgb(var(--color-secondary-500));">
 					{#if isShowConfig}
 						-
 					{:else}

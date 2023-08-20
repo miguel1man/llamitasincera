@@ -28,7 +28,7 @@ def chat_llama():
     def generate():
         response = llm_question(question, model_name)
         for word in response.split():
-            yield word + "\n"
+            yield word + " "
 
     return Response(generate(), mimetype="text/plain")
 
@@ -92,7 +92,7 @@ def similar_embeddings():
     return jsonify(response_with_id)
 
 
-@app.route("/api/chat-similarity")
+@app.route("/api/chat-sources")
 def chat_similarity():
     question = request.args.get("question")
     model_name = request.args.get("model_name")
