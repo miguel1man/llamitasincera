@@ -1,36 +1,25 @@
 <script lang="ts">
 	import type { Chunk, Message, ResponseData } from '../types/index'
-	import type { ToastSettings } from '@skeletonlabs/skeleton'
 	import { onMount, tick } from 'svelte'
 	import { SlideToggle } from '@skeletonlabs/skeleton'
-	import { Toast, toastStore } from '@skeletonlabs/skeleton'
-	import { handleChatQuestion } from '../services/apiChatLlama'
-	import { handleChatSources } from '../services/apiChatSources'
-	import { getSimilarEmbeddings } from '../services/apiSimilarEmbeddings'
-	import SourcesTree from '../components/SourcesTree.svelte'
 	import { fetchModelFiles } from '../services/apiGetModels'
-	// import { mockMessages, mockSources } from '../utils/mockData'
+	import { addAnswer, addQuestion } from '../services/addChats'
+	import SourcesTree from '../components/SourcesTree.svelte'
+	import moveScroll from '../utils/moveScroll'
+	import { mockMessages, mockSources } from '../utils/mockData'
 
 	let currentMessage = ''
 	let chunks: Chunk[] = []
-	let messageContainer: HTMLDivElement
 	let isShowSourcesMode = false
 	let isShowConfig = false
-	let messages: Message[] = []
-  let responseData: ResponseData | null = null
+	let messages: Message[] = mockMessages
+  let responseData: ResponseData | null = mockSources
 	let modelFiles: string[] = []
+	let scrollContainer: any
 	let selectedModel: string
 	let updatedChunks: string
 	let messageCounter = 1
 	let newQuestionId = `id_${messageCounter}`
-
-	function toastChat(): void {
-		const t: ToastSettings = {
-			message: 'Reading sources to elaborate an answer: ' + responseData?.content.length ,
-			timeout: 10000
-		}
-		toastStore.trigger(t)
-	}
 
 	function showConfig() {
 		isShowConfig = !isShowConfig
@@ -44,49 +33,32 @@
 		selectedModel = (event.target as HTMLSelectElement).value
 	}
 
-	function moveScroll() {
-		messageContainer.scrollTo({
-      top: messageContainer.scrollHeight,
-      behavior: 'smooth',
-    })
-	}
-
-	async function sendMessage() {
-		if (currentMessage.length === 0) return
-		let chat_question = currentMessage
-
-		currentMessage = ''
-		messageCounter++
-
-		const newQuestion: Message = {
-			content: chat_question,
-			isQuestion: true,
-			id: newQuestionId
-		}
-
-    messages = [...messages, newQuestion]
+	const handleSendChat = async () => {
+		const newQuestion = await addQuestion(
+		currentMessage,
+		messageCounter,
+		messages,
+		newQuestionId
+	)
+		messages = [...newQuestion]
+    currentMessage = ''
 		await tick()
-		moveScroll()
-		messageCounter++
-		// console.log("newQuestionId:", newQuestionId)
-		if (isShowSourcesMode) {
-			responseData = await getSimilarEmbeddings(chat_question, newQuestionId)
-			toastChat()
-			updatedChunks = await handleChatSources(chat_question, selectedModel, chunks)
+		moveScroll(scrollContainer)
 
-		} else {
-			updatedChunks = await handleChatQuestion(chat_question, selectedModel, chunks)
-		}
-
-		const newAnswer: Message = {
-			content: updatedChunks,
-			isQuestion: false,
-			id: newQuestionId
-		}
-
-    messages = [...messages, newAnswer]
+		const newAnswer = await addAnswer(
+			chunks,
+			currentMessage,
+			isShowSourcesMode,
+			messageCounter,
+			messages,
+			newQuestionId,
+			responseData,
+			selectedModel,
+			updatedChunks
+		)
+		messages = [...newAnswer]
 		await tick()
-		moveScroll()
+		moveScroll(scrollContainer)
 	}
 
   onMount(async () => {
@@ -95,22 +67,25 @@
   })
 </script>
 
-<main class="max-w-screen-xl mx-auto m-[1em] flex flex-col justify-center items-center space-y-[1em]">
+<main class="max-w-screen max-h-screen py-[1em] flex flex-col justify-center items-center bg-gradient-to-br from-black via-red-900 to-orange-600">
 	<section class="grid mx-[1em] {isShowConfig ? 'lg:grid-cols-2 gap-[1em]' : 'lg:grid-cols-1 space-y-[1em]'}">
 		
-		<div class="card mx-[0.5em] p-[1em] rounded-[0.5em] space-y-[1em] {isShowConfig ? 'md:w-full' : 'md:max-w-[100%] w-[100%]'} lg:order-2 w-full max-w-[48em] xl:max-w-[64em]">
-			<div class="h-[calc(100vh-11.75em)] flex flex-col space-y-2 overflow-y-auto" bind:this={messageContainer}>
+		<div class="mx-[0.5em] p-[1em] rounded-[0.5em] space-y-[1em] bg-gradient-to-b from-black/90 to-black/70 backdrop-blur border-[1px] border-solid border-white border-opacity-10 {isShowConfig ? 'md:w-full' : 'md:max-w-[100%] w-[100%]'} lg:order-2 w-full max-w-[48em] xl:max-w-[64em]">
+			<section class="h-[calc(100vh-11.75em)] flex flex-col space-y-2 overflow-y-auto" bind:this={scrollContainer}>
 				{#each messages as message, index (index)}
-				<div class="card p-4 max-w-[95%] rounded-[0.75em] {message.isQuestion 
-					? 'variant-soft-tertiary rounded-tr-none ml-auto justify-end' 
-					: 'variant-soft-secondary rounded-tl-none mr-auto justify-start'}">
+				<div class="p-[1em] max-w-[95%] border-[1px] border-solid border-white border-opacity-10 rounded-[0.5em]
+					{message.isQuestion 
+						? 'bg-white/[5%] rounded-tr-none ml-auto justify-end' 
+						: 'bg-white/[15%]  rounded-tl-none mr-auto justify-start'
+					}"
+				>
 					<p>{message.content}</p>
 				</div>
 				{/each}
-			</div>
+			</section>
 
-			<div class="input-group input-group-divider grid-cols-[auto_1fr_auto] rounded-[0.5em] gap-4">
-				<button class="input-group-shim font-bold text-[1em]" on:click={showConfig} style="color: rgb(var(--color-secondary-500));">
+			<section class="input-group input-group-divider grid-cols-[auto_1fr_auto] rounded-[0.5em] gap-0">
+				<button class="input-group-shim font-bold text-[1em] bg-red-700" on:click={showConfig} style="color: rgb(var(--color-white));">
 					{#if isShowConfig}
 						-
 					{:else}
@@ -119,20 +94,20 @@
 				</button>
 				<textarea
 					bind:value={currentMessage}
-					class="bg-transparent border-0 ring-0"
+					class="bg-black/[50%] border-0 ring-0"
 					name="prompt"
 					id="prompt"
 					placeholder="Write a question..."
 					rows="1"
 				/>
-				<button class="bg-secondary-800" on:click={sendMessage}>
+				<button class="bg-red-700" on:click={handleSendChat}>
 					Send
 				</button>
-			</div>
+			</section>
 		</div>
 
 		{#if isShowConfig}
-			<section class="card w-full mx-[0.5em] p-[1em] rounded-[0.75em] bg-tertiary-500 bg-opacity-10 space-y-[1em] {isShowConfig ? 'mt-0' : 'mt-[1em]'} lg:order-1">
+			<section class="section w-full mx-[0.5em] p-[1em] rounded-[0.75em] bg-opacity-10 space-y-[1em] bg-gradient-to-b from-black/90 to-black/70 backdrop-blur border-[1px] border-solid border-white border-opacity-10 {isShowConfig ? 'mt-0' : 'mt-[1em]'} lg:order-1">
 				
 				<section on:change={changeModel} class="flex flex-row items-center gap-[1em]">
 					<p class="font-bold">LLM:</p>
@@ -168,7 +143,5 @@
 
 			</section>
 		{/if}
-		
-		<Toast position='t'/>
 	</section>
 </main>
