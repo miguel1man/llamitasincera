@@ -1,7 +1,7 @@
 import type { Chunk, Message, ResponseData } from '../types/index'
 import { handleChatQuestion } from './apiChatLlama'
 import { handleChatSources } from './apiChatSources'
-import { getSimilarEmbeddings } from './apiSimilarEmbeddings'
+import getSimilarEmbeddings from './apiSimilarEmbeddings'
 
 export const addAnswer = async (
   chunks: Chunk[],

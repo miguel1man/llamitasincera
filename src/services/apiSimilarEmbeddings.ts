@@ -1,4 +1,4 @@
-export async function getSimilarEmbeddings(question: string, id: string) {
+async function getSimilarEmbeddings(question: string, id: string) {
   const url = `http://localhost:6757/api/similar-embeddings`
   const body = {
     question,
@@ -26,3 +26,5 @@ export async function getSimilarEmbeddings(question: string, id: string) {
     throw error
   }
 }
+
+export default getSimilarEmbeddings

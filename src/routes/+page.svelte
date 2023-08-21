@@ -7,13 +7,14 @@
 	import SourcesTree from '../components/SourcesTree.svelte'
 	import moveScroll from '../utils/moveScroll'
 	import { mockMessages, mockSources } from '../utils/mockData'
+	import getSimilarEmbeddings from '../services/apiSimilarEmbeddings'
 
 	let currentMessage = ''
 	let chunks: Chunk[] = []
 	let isShowSourcesMode = false
 	let isShowConfig = false
 	let messages: Message[] = mockMessages
-  let responseData: ResponseData | null = mockSources
+	let responseData: ResponseData | null = mockSources
 	let modelFiles: string[] = []
 	let scrollContainer: any
 	let selectedModel: string
@@ -25,25 +26,24 @@
 		isShowConfig = !isShowConfig
 	}
 
-  function toggleSourceMode() {
-    isShowSourcesMode = !isShowSourcesMode
-  }
+	function toggleSourceMode() {
+		isShowSourcesMode = !isShowSourcesMode
+	}
 
 	function changeModel(event: Event) {
 		selectedModel = (event.target as HTMLSelectElement).value
 	}
 
 	const handleSendChat = async () => {
-		const newQuestion = await addQuestion(
-		currentMessage,
-		messageCounter,
-		messages,
-		newQuestionId
-	)
+		const newQuestion = await addQuestion(currentMessage, messageCounter, messages, newQuestionId)
 		messages = [...newQuestion]
-    currentMessage = ''
+		currentMessage = ''
 		await tick()
 		moveScroll(scrollContainer)
+
+		if (isShowSourcesMode) {
+			responseData = await getSimilarEmbeddings(currentMessage, newQuestionId)
+		}
 
 		const newAnswer = await addAnswer(
 			chunks,
@@ -61,31 +61,49 @@
 		moveScroll(scrollContainer)
 	}
 
-  onMount(async () => {
-    modelFiles = await fetchModelFiles()
+	onMount(async () => {
+		modelFiles = await fetchModelFiles()
 		selectedModel = modelFiles[0]
-  })
+	})
 </script>
 
-<main class="max-w-screen max-h-screen py-[1em] flex flex-col justify-center items-center bg-gradient-to-br from-black via-red-900 to-orange-600">
-	<section class="grid mx-[1em] {isShowConfig ? 'lg:grid-cols-2 gap-[1em]' : 'lg:grid-cols-1 space-y-[1em]'}">
-		
-		<div class="mx-[0.5em] p-[1em] rounded-[0.5em] space-y-[1em] bg-gradient-to-b from-black/90 to-black/70 backdrop-blur border-[1px] border-solid border-white border-opacity-10 {isShowConfig ? 'md:w-full' : 'md:max-w-[100%] w-[100%]'} lg:order-2 w-full max-w-[48em] xl:max-w-[64em]">
-			<section class="h-[calc(100vh-11.75em)] flex flex-col space-y-2 overflow-y-auto" bind:this={scrollContainer}>
+<main
+	class="w-full h-full py-[1em] flex flex-col justify-center items-center bg-gradient-to-br from-black via-red-900 to-orange-600"
+>
+	<section
+		class="grid ml-[0.5em] mr-[1.5em] {isShowConfig
+			? 'lg:grid-cols-2 gap-[1em]'
+			: 'lg:grid-cols-1 space-y-[1em]'}"
+	>
+		<div
+			class="mx-[0.5em] p-[1em] rounded-[0.5em] space-y-[1em] bg-gradient-to-b from-black/90 to-black/70 backdrop-blur border-[1px] border-solid border-white border-opacity-10 {isShowConfig
+				? 'md:w-full'
+				: 'md:max-w-[100%] w-[100%]'} lg:order-2 w-full max-w-[48em] xl:max-w-[64em]"
+		>
+			<section
+				class="h-[calc(100vh-11.75em)] flex flex-col space-y-2 overflow-y-auto"
+				bind:this={scrollContainer}
+			>
 				{#each messages as message, index (index)}
-				<div class="p-[1em] max-w-[95%] border-[1px] border-solid border-white border-opacity-10 rounded-[0.5em]
-					{message.isQuestion 
-						? 'bg-white/[5%] rounded-tr-none ml-auto justify-end' 
-						: 'bg-white/[15%]  rounded-tl-none mr-auto justify-start'
-					}"
-				>
-					<p>{message.content}</p>
-				</div>
+					<div
+						class="p-[1em] max-w-[95%] border-[1px] border-solid border-white border-opacity-10 rounded-[1em]
+					{message.isQuestion
+							? 'bg-white/[5%] rounded-br-none ml-auto justify-end'
+							: 'bg-white/[15%]  rounded-bl-none mr-auto justify-start'}"
+					>
+						<p>{message.content}</p>
+					</div>
 				{/each}
 			</section>
 
-			<section class="input-group input-group-divider grid-cols-[auto_1fr_auto] rounded-[0.5em] gap-0">
-				<button class="input-group-shim font-bold text-[1em] bg-red-700" on:click={showConfig} style="color: rgb(var(--color-white));">
+			<section
+				class="input-group input-group-divider grid-cols-[auto_1fr_auto] rounded-[0.5em] gap-0"
+			>
+				<button
+					class="input-group-shim font-bold text-[1em] bg-red-700"
+					on:click={showConfig}
+					style="color: rgb(var(--color-white));"
+				>
 					{#if isShowConfig}
 						-
 					{:else}
@@ -100,15 +118,16 @@
 					placeholder="Write a question..."
 					rows="1"
 				/>
-				<button class="bg-red-700" on:click={handleSendChat}>
-					Send
-				</button>
+				<button class="bg-red-700" on:click={handleSendChat}>Send</button>
 			</section>
 		</div>
 
 		{#if isShowConfig}
-			<section class="section w-full mx-[0.5em] p-[1em] rounded-[0.75em] bg-opacity-10 space-y-[1em] bg-gradient-to-b from-black/90 to-black/70 backdrop-blur border-[1px] border-solid border-white border-opacity-10 {isShowConfig ? 'mt-0' : 'mt-[1em]'} lg:order-1">
-				
+			<section
+				class="section w-full mx-[0.5em] p-[1em] rounded-[0.75em] bg-opacity-10 space-y-[1em] bg-gradient-to-b from-black/90 to-black/70 backdrop-blur border-[1px] border-solid border-white border-opacity-10 {isShowConfig
+					? 'mt-0'
+					: 'mt-[1em]'} lg:order-1"
+			>
 				<section on:change={changeModel} class="flex flex-row items-center gap-[1em]">
 					<p class="font-bold">LLM:</p>
 					<select class="select max-w-[20em]">
@@ -116,17 +135,40 @@
 							<option value={model}>{model}</option>
 						{/each}
 					</select>
-					<button type="button" class="btn-icon" on:click={() => {
-						fetchModelFiles()
-					}}>
-						<svg class="h-8 w-8 text-secondary-500"  width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">  <path stroke="none" d="M0 0h24v24H0z"/>  <path d="M4 12v-3a3 3 0 0 1 3 -3h13m-3 -3l3 3l-3 3" />  <path d="M20 12v3a3 3 0 0 1 -3 3h-13m3 3l-3-3l3-3" />
+					<button
+						type="button"
+						class="btn-icon"
+						on:click={() => {
+							fetchModelFiles()
+						}}
+					>
+						<svg
+							class="h-8 w-8 text-gray-300"
+							width="24"
+							height="24"
+							viewBox="0 0 24 24"
+							stroke-width="2"
+							stroke="currentColor"
+							fill="none"
+							stroke-linecap="round"
+							stroke-linejoin="round"
+						>
+							<path stroke="none" d="M0 0h24v24H0z" />
+							<path d="M4 12v-3a3 3 0 0 1 3 -3h13m-3 -3l3 3l-3 3" />
+							<path d="M20 12v3a3 3 0 0 1 -3 3h-13m3 3l-3-3l3-3" />
 						</svg>
 					</button>
 				</section>
 
 				<section class="flex flex-row items-center gap-[1em]">
 					<p class="font-bold">Chat mode:</p>
-					<SlideToggle name="slider-sources" checked={isShowSourcesMode} background="bg-secondary-800" active="bg-primary-500" on:click={toggleSourceMode}>
+					<SlideToggle
+						name="slider-sources"
+						checked={isShowSourcesMode}
+						background="bg-red-900"
+						active="bg-red-600"
+						on:click={toggleSourceMode}
+					>
 						{#if isShowSourcesMode}
 							<p>Show sources</p>
 						{:else}
@@ -137,10 +179,9 @@
 
 				{#if responseData}
 					<section class="h-[calc(100vh-15em)] overflow-y-auto">
-						<SourcesTree responseData={responseData}/>
+						<SourcesTree {responseData} />
 					</section>
 				{/if}
-
 			</section>
 		{/if}
 	</section>
