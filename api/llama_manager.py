@@ -36,7 +36,8 @@ def llm_vector_similarity(question, answer_data, model_name, template=template_d
             "answer_data": answer_data,
             "question": question,
         }
-        llm_chain.run(inputs)
+
+        return llm_chain.run(inputs)
 
     except Exception as e:
         print(f"Error on llm processing: {e}")
@@ -72,6 +73,7 @@ def llm_question(question, model_name, template=template_question):
         inputs = {
             "question": question,
         }
+
         return llm_chain.run(inputs)
 
     except Exception as e:

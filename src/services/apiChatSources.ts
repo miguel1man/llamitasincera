@@ -40,9 +40,9 @@ async function handleChatSources(
 
     return chunkText
   } catch (e) {
-    console.error('Error handling question:', e)
+    console.error('Error handling chat with sources:', e)
     return ''
   }
 }
 
-export default handleChatSources
+export { handleChatSources }

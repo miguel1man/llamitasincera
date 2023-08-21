@@ -7,9 +7,9 @@ interface Content {
 }
 
 interface Message {
-  content: string
-  isQuestion: boolean
   id: string
+  isQuestion: boolean
+  content: string
 }
 
 interface Metadata {

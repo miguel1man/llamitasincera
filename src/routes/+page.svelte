@@ -1,9 +1,11 @@
 <script lang="ts">
 	import type { Chunk, Message, ResponseData } from '../types/index'
-	import { onMount } from 'svelte'
+	import type { ToastSettings } from '@skeletonlabs/skeleton'
+	import { onMount, tick } from 'svelte'
 	import { SlideToggle } from '@skeletonlabs/skeleton'
+	import { Toast, toastStore } from '@skeletonlabs/skeleton'
 	import { handleChatQuestion } from '../services/apiChatLlama'
-	import handleChatSources from '../services/apiChatSources'
+	import { handleChatSources } from '../services/apiChatSources'
 	import { getSimilarEmbeddings } from '../services/apiSimilarEmbeddings'
 	import SourcesTree from '../components/SourcesTree.svelte'
 	import { fetchModelFiles } from '../services/apiGetModels'
@@ -11,7 +13,7 @@
 
 	let currentMessage = ''
 	let chunks: Chunk[] = []
-	let messageContainer: HTMLDivElement | null = null
+	let messageContainer: HTMLDivElement
 	let isShowSourcesMode = false
 	let isShowConfig = false
 	let messages: Message[] = []
@@ -20,8 +22,15 @@
 	let selectedModel: string
 	let updatedChunks: string
 	let messageCounter = 1
+	let newQuestionId = `id_${messageCounter}`
 
-	const newQuestionId = `id_${messageCounter}`
+	function toastChat(): void {
+		const t: ToastSettings = {
+			message: 'Reading sources to elaborate an answer: ' + responseData?.content.length ,
+			timeout: 10000
+		}
+		toastStore.trigger(t)
+	}
 
 	function showConfig() {
 		isShowConfig = !isShowConfig
@@ -35,28 +44,38 @@
 		selectedModel = (event.target as HTMLSelectElement).value
 	}
 
+	function moveScroll() {
+		messageContainer.scrollTo({
+      top: messageContainer.scrollHeight,
+      behavior: 'smooth',
+    })
+	}
+
 	async function sendMessage() {
 		if (currentMessage.length === 0) return
+		let chat_question = currentMessage
 
+		currentMessage = ''
 		messageCounter++
 
 		const newQuestion: Message = {
-			content: currentMessage,
+			content: chat_question,
 			isQuestion: true,
 			id: newQuestionId
 		}
-    messages = [...messages, newQuestion]
-		
-		messageCounter++
 
-		console.log('Consumiendo API:', newQuestionId)
+    messages = [...messages, newQuestion]
+		await tick()
+		moveScroll()
+		messageCounter++
+		// console.log("newQuestionId:", newQuestionId)
 		if (isShowSourcesMode) {
-			responseData = await getSimilarEmbeddings(currentMessage, newQuestionId)
-			console.log('isShowSourcesMode:', responseData)
-			updatedChunks = await handleChatSources(currentMessage, selectedModel, chunks)
+			responseData = await getSimilarEmbeddings(chat_question, newQuestionId)
+			toastChat()
+			updatedChunks = await handleChatSources(chat_question, selectedModel, chunks)
+
 		} else {
-			updatedChunks = await handleChatQuestion(currentMessage, selectedModel, chunks)
-			console.log('no sources:', updatedChunks)
+			updatedChunks = await handleChatQuestion(chat_question, selectedModel, chunks)
 		}
 
 		const newAnswer: Message = {
@@ -66,11 +85,8 @@
 		}
 
     messages = [...messages, newAnswer]
-		currentMessage = ''
-		messageContainer?.scrollTo({
-      top: messageContainer.scrollHeight,
-      behavior: 'smooth',
-    })
+		await tick()
+		moveScroll()
 	}
 
   onMount(async () => {
@@ -80,10 +96,10 @@
 </script>
 
 <main class="max-w-screen-xl mx-auto m-[1em] flex flex-col justify-center items-center space-y-[1em]">
-	<section class="grid gap-[0.5em] {isShowConfig ? 'lg:grid-cols-2' : 'lg:grid-cols-1'}">
+	<section class="grid mx-[1em] {isShowConfig ? 'lg:grid-cols-2 gap-[1em]' : 'lg:grid-cols-1 space-y-[1em]'}">
 		
-		<div class="card mx-[0.5em] p-[0.5em] rounded-[0.5em] space-y-[0.5em] md:{isShowConfig ? 'w-full' : 'max-w-[100%] w-[100%]'} lg:order-2 w-full max-w-[48em] xl:max-w-[64em] bg-tertiary-500 bg-opacity-10">
-			<div class="h-[calc(100vh-10em)] flex flex-col space-y-2 overflow-y-auto" bind:this={messageContainer}>
+		<div class="card mx-[0.5em] p-[1em] rounded-[0.5em] space-y-[1em] {isShowConfig ? 'md:w-full' : 'md:max-w-[100%] w-[100%]'} lg:order-2 w-full max-w-[48em] xl:max-w-[64em]">
+			<div class="h-[calc(100vh-11.75em)] flex flex-col space-y-2 overflow-y-auto" bind:this={messageContainer}>
 				{#each messages as message, index (index)}
 				<div class="card p-4 max-w-[95%] rounded-[0.75em] {message.isQuestion 
 					? 'variant-soft-tertiary rounded-tr-none ml-auto justify-end' 
@@ -116,12 +132,12 @@
 		</div>
 
 		{#if isShowConfig}
-			<section class="card lg:order-1 rounded-[0.75em] bg-tertiary-500 bg-opacity-10 space-y-[1em] p-[1em] w-full mt-4 lg:mt-0">
+			<section class="card w-full mx-[0.5em] p-[1em] rounded-[0.75em] bg-tertiary-500 bg-opacity-10 space-y-[1em] {isShowConfig ? 'mt-0' : 'mt-[1em]'} lg:order-1">
 				
 				<section on:change={changeModel} class="flex flex-row items-center gap-[1em]">
 					<p class="font-bold">LLM:</p>
 					<select class="select max-w-[20em]">
-						{#each modelFiles as model}
+						{#each modelFiles as model, index (index)}
 							<option value={model}>{model}</option>
 						{/each}
 					</select>
@@ -153,6 +169,6 @@
 			</section>
 		{/if}
 		
-
+		<Toast position='t'/>
 	</section>
 </main>

@@ -96,24 +96,24 @@ def similar_embeddings():
 def chat_similarity():
     question = request.args.get("question")
     model_name = request.args.get("model_name")
-    answer_data = vector_db_query(question)
+    answer_db = vector_db_query(question)
     unique_responses = set()
-    response_list = []
+    answer_data = []
 
-    for doc, score in answer_data:
+    for doc, score in answer_db:
         res_dict = {"text": doc.page_content, "metadata": doc.metadata, "score": score}
         res_json = json.dumps(res_dict, sort_keys=True)
 
         if res_json not in unique_responses:
             unique_responses.add(res_json)
-            response_list.append(res_dict)
+            answer_data.append(res_dict)
 
-    print("response_list:", response_list)
-
+    # print("answer_data:", answer_data)
+    # print("model_name:", model_name)
     def generate_similarity():
-        response = llm_vector_similarity(question, response_list, model_name)
+        response = llm_vector_similarity(question, answer_data, model_name)
         for word in response.split():
-            yield word + "\n"
+            yield word + " "
 
     return Response(generate_similarity(), mimetype="text/plain")
 
