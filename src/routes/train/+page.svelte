@@ -30,7 +30,7 @@
 		if (input.files) {
 			const allowedFileTypes = ['.pdf', '.md']
 			const files = input.files
-
+			// console.log('Recieved files:', files)
 			const validFiles: any = []
 			const invalidFiles: any = []
 
@@ -42,12 +42,13 @@
 					invalidFiles.push(file)
 				}
 			})
-
+			// console.log('validFiles:', validFiles)
+			// console.log('invalidFiles:', invalidFiles)
 			const validFileList = new DataTransfer()
 			validFiles.forEach((file: any) => {
 				validFileList.items.add(file)
 			})
-
+			// console.log('validFileList:', validFileList.files)
 			if (validFiles.length > 0) {
 				uploadResponse = await uploadFiles(validFileList.files)
 				// console.log('uploadRespsonse:', uploadResponse)

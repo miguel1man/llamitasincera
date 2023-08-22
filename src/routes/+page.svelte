@@ -2,25 +2,27 @@
 	import type { Chunk, Message, ResponseData } from '../types/index'
 	import { onMount, tick } from 'svelte'
 	import { SlideToggle } from '@skeletonlabs/skeleton'
+	import { Toast, toastStore } from '@skeletonlabs/skeleton'
+	import type { ToastSettings } from '@skeletonlabs/skeleton'
 	import { fetchModelFiles } from '../services/apiGetModels'
 	import { addAnswer, addQuestion } from '../services/addChats'
 	import SourcesTree from '../components/SourcesTree.svelte'
 	import moveScroll from '../utils/moveScroll'
-	import { mockMessages, mockSources } from '../utils/mockData'
 	import getSimilarEmbeddings from '../services/apiSimilarEmbeddings'
+	// import { mockMessages, mockSources } from '../utils/mockData'
 
-	let currentMessage = ''
 	let chunks: Chunk[] = []
-	let isShowSourcesMode = false
+	let currentMessage = ''
 	let isShowConfig = false
-	let messages: Message[] = mockMessages
-	let responseData: ResponseData | null = mockSources
+	let isShowSourcesMode = false
+	let messageCounter = 1
+	let messages: Message[] = []
 	let modelFiles: string[] = []
+	let newQuestionId = `id_${messageCounter}`
+	let responseData: ResponseData | null = null
 	let scrollContainer: any
 	let selectedModel: string
 	let updatedChunks: string
-	let messageCounter = 1
-	let newQuestionId = `id_${messageCounter}`
 
 	function showConfig() {
 		isShowConfig = !isShowConfig
@@ -63,6 +65,17 @@
 
 	onMount(async () => {
 		modelFiles = await fetchModelFiles()
+		if (modelFiles.length === 0) {
+			const t: ToastSettings = {
+				message: 'No LLM detected',
+				action: {
+					label: 'Reload page',
+					response: () => location.reload()
+				},
+				autohide: false
+			}
+			toastStore.trigger(t)
+		}
 		selectedModel = modelFiles[0]
 	})
 </script>
@@ -120,6 +133,7 @@
 				/>
 				<button class="bg-red-700" on:click={handleSendChat}>Send</button>
 			</section>
+			<Toast position="t" background="bg-red-700" />
 		</div>
 
 		{#if isShowConfig}

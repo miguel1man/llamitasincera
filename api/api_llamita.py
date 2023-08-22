@@ -1,4 +1,5 @@
 import json
+import mimetypes
 import os
 from flask import Flask, jsonify, request, Response
 from flask_cors import CORS
@@ -47,7 +48,12 @@ def upload_files():
         for file in files:
             try:
                 file.save(os.path.join(FOLDER_PATH, file.filename))
-                chunks = process_markdown(os.path.join(FOLDER_PATH, file.filename))
+                fileType = mimetypes.guess_type(file.filename)[0]
+                # print(f"guess_type(file.filename): {fileType}")
+                if fileType == "text/markdown":
+                    chunks = process_markdown(os.path.join(FOLDER_PATH, file.filename))
+                if fileType == "application/pdf":
+                    print("PDF support coming soon")
 
                 if process_chunks(chunks):
                     response.append({"file": file.filename, "uploaded": True})
@@ -58,7 +64,7 @@ def upload_files():
 
             except Exception as e:
                 response.append({"file": file.filename, "uploaded": False}), 500
-
+        # print(f"api response: {response}")
         return jsonify(response)
 
     except KeyError:

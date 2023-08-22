@@ -1,7 +1,5 @@
 from embedding_manager import split_text_to_chunks
-from vector_db_manager import start_vector_db
-
-vector_db = start_vector_db()
+from vector_db_manager import start_chroma_db
 
 
 def process_chunks(chunks):
@@ -10,7 +8,7 @@ def process_chunks(chunks):
         for i in range(length):
             chunk = chunks[i]["text"]
             file = chunks[i]["file"]
-            header = chunks[i]["header"]
+            header = chunks[i]["header"] if "header" in chunks[i] else None
 
             texts = [chunk]
             print(f"\nlength characters: {len(texts[0])}")
@@ -19,10 +17,12 @@ def process_chunks(chunks):
 
             for split in splits:
                 print("split length:", len(split))
-                metadatas = [{"file": file, "header": header}]
+                metadatas = [{"file": file}]
+                if header is not None:
+                    metadatas[0]["header"] = header
                 print(f"metadatas: {metadatas}")
-
-                vector_db.add_texts(texts=[split], metadatas=metadatas)
+                db = start_chroma_db()
+                db.add_texts(texts=[split], metadatas=metadatas)
 
         return True
 

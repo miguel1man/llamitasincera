@@ -1,9 +1,7 @@
 import os
 from markdown_tools import process_markdown
 from process_chunks import process_chunks
-from vector_db_manager import start_vector_db
-
-vector_db = start_vector_db()
+from vector_db_manager import start_chroma_db
 
 
 def scan_folder(folder_path):
@@ -22,7 +20,7 @@ def vectorize(folder):
         chunks = process_markdown(folder)
         length = len(chunks)
         print(f"Total chunks: {length}")
-        if process_chunks(chunks, vector_db):
+        if process_chunks(chunks):
             print("Chunks processed successfully")
         else:
             print("Error while processing chunks")

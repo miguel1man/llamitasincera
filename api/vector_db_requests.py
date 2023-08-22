@@ -1,12 +1,12 @@
 from langchain.vectorstores import Chroma
 from embedding_manager import set_embedding
-from vector_db_manager import INDEX_NAME, INDEX_PATH
+from vector_db_manager import INDEX_NAME_1, INDEX_PATH_1
 
 RESULTS = 2
 
 
 def vector_db_query(
-    query_text, collection=INDEX_NAME, directory=INDEX_PATH, results=RESULTS
+    query_text, collection=INDEX_NAME_1, directory=INDEX_PATH_1, results=RESULTS
 ):
     vectordb = Chroma(
         collection_name=collection,
