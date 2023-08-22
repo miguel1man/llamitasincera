@@ -9,7 +9,7 @@
 	<svelte:fragment slot="header">
 		<AppBar background="bg-neutral-950">
 			<svelte:fragment slot="lead">
-				<strong class="text-xl uppercase">LLDC</strong>
+				<strong class="text-xl uppercase">Llamita Sincera</strong>
 			</svelte:fragment>
 			<svelte:fragment slot="trail">
 				<a class="btn btn-sm bg-white/[15%]" href="/">Chat</a>
