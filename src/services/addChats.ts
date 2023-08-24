@@ -5,7 +5,7 @@ import getSimilarEmbeddings from './apiSimilarEmbeddings'
 
 export const addAnswer = async (
   chunks: Chunk[],
-  currentMessage: string,
+  userMessage: string,
   isShowSourcesMode: boolean,
   messageCounter: number,
   messages: Message[],
@@ -17,10 +17,10 @@ export const addAnswer = async (
 	messageCounter++
 
 	if (isShowSourcesMode) {
-		responseData = await getSimilarEmbeddings(currentMessage, newQuestionId)
-		updatedChunks = await handleChatSources(currentMessage, selectedModel, chunks)
+		responseData = await getSimilarEmbeddings(userMessage, newQuestionId)
+		updatedChunks = await handleChatSources(userMessage, selectedModel, chunks)
 	} else {
-		updatedChunks = await handleChatQuestion(currentMessage, selectedModel, chunks)
+		updatedChunks = await handleChatQuestion(userMessage, selectedModel, chunks)
 	}
 
 	const newAnswer: Message = {

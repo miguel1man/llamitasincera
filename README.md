@@ -27,8 +27,8 @@
 ## Frontend
 
 - SvelteKit
-- Typescript
-- Tailwind
+- TypeScript
+- Tailwind CSS
 - Skeleton
 
 ## Roadmap

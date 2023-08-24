@@ -39,6 +39,7 @@
 	const handleSendChat = async () => {
 		const newQuestion = await addQuestion(currentMessage, messageCounter, messages, newQuestionId)
 		messages = [...newQuestion]
+		const userMessage = currentMessage
 		currentMessage = ''
 		await tick()
 		moveScroll(scrollContainer)
@@ -49,7 +50,7 @@
 
 		const newAnswer = await addAnswer(
 			chunks,
-			currentMessage,
+			userMessage,
 			isShowSourcesMode,
 			messageCounter,
 			messages,
@@ -59,6 +60,7 @@
 			updatedChunks
 		)
 		messages = [...newAnswer]
+		currentMessage = ''
 		await tick()
 		moveScroll(scrollContainer)
 	}

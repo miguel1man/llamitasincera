@@ -4,4 +4,5 @@ flask-cors==4.0.0
 langchain==0.0.246
 llama-cpp-python==0.1.77
 pypdf==3.13.0
+sentence-transformers==2.2.2
 unstructured==0.5.9
