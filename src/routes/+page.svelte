@@ -85,17 +85,17 @@
 <main
 	class="w-full h-full py-[1em] flex flex-col justify-center items-center bg-gradient-to-br from-black via-red-900 to-orange-600"
 >
-	<section
+	<div
 		class="grid ml-[0.5em] mr-[1.5em] {isShowConfig
 			? 'lg:grid-cols-2 gap-[1em]'
 			: 'lg:grid-cols-1 space-y-[1em]'}"
 	>
-		<div
-			class="mx-[0.5em] p-[1em] rounded-[0.5em] space-y-[1em] bg-gradient-to-b from-black/90 to-black/70 backdrop-blur border-[1px] border-solid border-white border-opacity-10 {isShowConfig
-				? 'md:w-full'
-				: 'md:max-w-[100%] w-[100%]'} lg:order-2 w-full max-w-[48em] xl:max-w-[64em]"
+		<section
+			class="section w-full mx-[0.5em] p-[1em] rounded-[0.75em] space-y-[1em] bg-gradient-to-b from-black/90 to-black/70 backdrop-blur border-[1px] border-solid border-white border-opacity-10
+				{isShowConfig ? 'md:w-full' : 'md:max-w-[100%] w-[100%]'}
+				lg:order-2 w-full max-w-[48em] xl:max-w-[64em]"
 		>
-			<section
+			<div
 				class="h-[calc(100vh-11.75em)] flex flex-col space-y-2 overflow-y-auto"
 				bind:this={scrollContainer}
 			>
@@ -109,10 +109,10 @@
 						<p>{message.content}</p>
 					</div>
 				{/each}
-			</section>
+			</div>
 
 			<section
-				class="input-group input-group-divider grid-cols-[auto_1fr_auto] rounded-[0.5em] gap-0"
+				class="input-group input-group-divider focus:outline-color-blue grid-cols-[auto_1fr_auto] rounded-[0.5em] gap-0 md:min-w-[30em] lg:min-w-[28em]"
 			>
 				<button
 					class="input-group-shim font-bold text-[1em] bg-red-700"
@@ -136,11 +136,11 @@
 				<button class="bg-red-700" on:click={handleSendChat}>Send</button>
 			</section>
 			<Toast position="t" background="bg-red-700" />
-		</div>
+		</section>
 
 		{#if isShowConfig}
 			<section
-				class="section w-full mx-[0.5em] p-[1em] rounded-[0.75em] bg-opacity-10 space-y-[1em] bg-gradient-to-b from-black/90 to-black/70 backdrop-blur border-[1px] border-solid border-white border-opacity-10 {isShowConfig
+				class="section w-full mx-[0.5em] p-[1em] rounded-[0.75em] space-y-[1em] bg-gradient-to-b from-black/90 to-black/70 backdrop-blur border-[1px] border-solid border-white border-opacity-10 {isShowConfig
 					? 'mt-0'
 					: 'mt-[1em]'} lg:order-1"
 			>
@@ -193,6 +193,14 @@
 					</SlideToggle>
 				</section>
 
+				{#if isShowSourcesMode && !responseData}
+					<div
+						class="m-[1em] p-[2em] mx-auto max-w-[24em] text-center border-[1px] border-solid border-white border-opacity-10 rounded-[1em] bg-white/[5%]"
+					>
+						The app will provide the sources it used to answer your questions here.
+					</div>
+				{/if}
+
 				{#if responseData}
 					<section class="h-[calc(100vh-15em)] overflow-y-auto">
 						<SourcesTree {responseData} />
@@ -200,5 +208,5 @@
 				{/if}
 			</section>
 		{/if}
-	</section>
+	</div>
 </main>
