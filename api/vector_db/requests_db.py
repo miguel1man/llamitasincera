@@ -1,6 +1,6 @@
 from langchain.vectorstores import Chroma
-from embedding_manager import set_embedding
-from vector_db_manager import INDEX_NAME_1, INDEX_PATH_1
+from llm.embedding_manager import set_embedding
+from vector_db.manager_db import INDEX_NAME_1, INDEX_PATH_1
 
 RESULTS = 2
 

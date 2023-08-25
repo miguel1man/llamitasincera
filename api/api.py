@@ -3,11 +3,11 @@ import mimetypes
 import os
 from flask import Flask, jsonify, request, Response
 from flask_cors import CORS
-from file_tools import delete_files_in_folder
-from llama_manager import llm_question, llm_vector_similarity
-from markdown_tools import process_markdown
-from process_chunks import process_chunks
-from vector_db_requests import vector_db_query
+from file_utils.file_tools import delete_files_in_folder
+from llm.llama_manager import llm_question, llm_vector_similarity
+from file_utils.markdown_tools import process_markdown
+from vector_db.process_chunks import process_chunks_on_db
+from vector_db.requests_db import vector_db_query
 
 app = Flask(__name__)
 CORS(app)
@@ -55,7 +55,7 @@ def upload_files():
                 if fileType == "application/pdf":
                     print("PDF support coming soon")
 
-                if process_chunks(chunks):
+                if process_chunks_on_db(chunks):
                     response.append({"file": file.filename, "uploaded": True})
                 else:
                     response.append({"file": file.filename, "uploaded": False}), 500

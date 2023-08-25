@@ -179,4 +179,4 @@ vite.config.ts.timestamp-*
 
 # folders
 temp_uploads/
-vector_db/
+vector_database/

@@ -1,8 +1,8 @@
 from langchain.vectorstores import Chroma
-from embedding_manager import set_embedding
+from llm.embedding_manager import set_embedding
 
 INDEX_NAME_1 = "index_1"
-INDEX_PATH_1 = "vector_db/chroma_1"
+INDEX_PATH_1 = "vector_database/chroma_1"
 INDEX_PATH_2 = "vector_db/faiss_1"
 
 

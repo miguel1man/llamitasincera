@@ -1,8 +1,8 @@
-from embedding_manager import split_text_to_chunks
-from vector_db_manager import start_chroma_db
+from llm.embedding_manager import split_text_to_chunks
+from vector_db.manager_db import start_chroma_db
 
 
-def process_chunks(chunks):
+def process_chunks_on_db(chunks):
     try:
         length = len(chunks)
         for i in range(length):
