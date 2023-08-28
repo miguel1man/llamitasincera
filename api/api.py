@@ -1,12 +1,9 @@
 import json
-import mimetypes
 import os
 from flask import Flask, jsonify, request, Response
 from flask_cors import CORS
-from file_utils.file_tools import delete_files_in_folder
 from llm.llama_manager import llm_question, llm_vector_similarity
-from file_utils.markdown_tools import process_markdown
-from vector_db.process_chunks import process_chunks_on_db
+from vector_db.process_files import process_files
 from vector_db.requests_db import vector_db_query
 
 app = Flask(__name__)
@@ -36,42 +33,8 @@ def chat_llama():
 
 @app.route("/api/upload-files", methods=["POST"])
 def upload_files():
-    try:
-        FOLDER_PATH = "temp_uploads"
-
-        if not os.path.exists(FOLDER_PATH):
-            os.makedirs(FOLDER_PATH)
-
-        files = request.files.getlist("files")
-        response = []
-
-        for file in files:
-            try:
-                file.save(os.path.join(FOLDER_PATH, file.filename))
-                fileType = mimetypes.guess_type(file.filename)[0]
-                # print(f"guess_type(file.filename): {fileType}")
-                if fileType == "text/markdown":
-                    chunks = process_markdown(os.path.join(FOLDER_PATH, file.filename))
-                if fileType == "application/pdf":
-                    print("PDF support coming soon")
-
-                if process_chunks_on_db(chunks):
-                    response.append({"file": file.filename, "uploaded": True})
-                else:
-                    response.append({"file": file.filename, "uploaded": False}), 500
-
-                delete_files_in_folder(FOLDER_PATH)
-
-            except Exception as e:
-                response.append({"file": file.filename, "uploaded": False}), 500
-        # print(f"api response: {response}")
-        return jsonify(response)
-
-    except KeyError:
-        return jsonify({"Missing parameter: files"}), 400
-
-    except Exception as e:
-        return jsonify({"Error uploading files to api": str(e)})
+    response = process_files(request)
+    return response
 
 
 @app.route("/api/similar-embeddings", methods=["POST"])

@@ -1,8 +1,7 @@
 from llm.embedding_manager import split_text_to_chunks
-from vector_db.manager_db import start_chroma_db
 
 
-def process_chunks_on_db(chunks):
+def process_chunks_on_db(chunks, db):
     try:
         length = len(chunks)
         for i in range(length):
@@ -21,7 +20,6 @@ def process_chunks_on_db(chunks):
                 if header is not None:
                     metadatas[0]["header"] = header
                 print(f"metadatas: {metadatas}")
-                db = start_chroma_db()
                 db.add_texts(texts=[split], metadatas=metadatas)
 
         return True
