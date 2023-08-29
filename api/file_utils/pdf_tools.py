@@ -13,7 +13,23 @@ def scan_pdf_from_folder(folder_path):
             return []
 
     except Exception as e:
-        print(f"Error while scanning local folder_path: {folder_path}\n{e}")
+        print(f"Error while scanning folder: {folder_path}\n{e}")
         return []
 
+    print(f"length doc: {len(documents)}")
     return documents
+
+
+def process_pdf(folder_path, filename):
+    try:
+        documents = scan_pdf_from_folder(folder_path)
+        processed_pdf = []
+
+        for doc in documents:
+            processed_pdf.append({"text": doc.page_content, "file": filename})
+
+        print(f"processed_pdf: {processed_pdf}")
+        return processed_pdf
+
+    except Exception as e:
+        print(f"Error while processing markdown: {e}")

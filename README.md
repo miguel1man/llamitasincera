@@ -37,5 +37,5 @@
 - [ ] Windows version
 - [ ] Mac version
 - [x] .md file type supported
-- [ ] .pdf file type supported
+- [x] .pdf file type supported
 - [ ] .doc file type supported

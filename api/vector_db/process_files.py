@@ -3,6 +3,7 @@ import os
 from flask import jsonify
 from file_utils.file_tools import delete_files_in_folder
 from file_utils.markdown_tools import process_markdown
+from file_utils.pdf_tools import process_pdf
 from vector_db.manager_db import start_chroma_db
 from vector_db.process_chunks import process_chunks_on_db
 
@@ -25,7 +26,7 @@ def process_files(request):
                 if fileType == "text/markdown":
                     chunks = process_markdown(os.path.join(FOLDER_PATH, file.filename))
                 if fileType == "application/pdf":
-                    print("PDF support coming soon")
+                    chunks = process_pdf(FOLDER_PATH, file.filename)
 
                 if process_chunks_on_db(chunks, start_chroma_db()):
                     response.append({"file": file.filename, "uploaded": True})
