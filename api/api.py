@@ -12,10 +12,13 @@ CORS(app)
 
 @app.route("/api/get-models", methods=["GET"])
 def get_model_files():
-    model_files = [
-        filename for filename in os.listdir("models") if filename.endswith(".bin")
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    parent_dir = os.path.dirname(current_dir)
+    models_dir = os.path.join(parent_dir, "models")
+    list_of_models = [
+        filename for filename in os.listdir(models_dir) if filename.endswith(".bin")
     ]
-    return jsonify(model_files)
+    return jsonify(list_of_models)
 
 
 @app.route("/api/chat-llama")

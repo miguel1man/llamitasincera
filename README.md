@@ -7,9 +7,13 @@
 
 ## Install
 
-- `pip install -r requirements.txt`
-- `npm i`
-- Download a language model and place it in the `models` folder. [List of LLMs](models/README.md)
+1. `pip install -r requirements.txt`
+2. `npm install`
+3. Download a language model and place it in the `models` folder. [List of LLMs](models/README.md)
+
+## Requirements
+
+- Python 3.9.13
 
 ## Run
 
@@ -17,6 +21,7 @@
 - Close with `ctrl+C` and then `ctrl+Z`
 
 ## Backend
+
 - Llama 2
 - Chroma DB
 - Sentence Transformers

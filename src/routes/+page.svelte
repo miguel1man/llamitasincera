@@ -65,20 +65,32 @@
 		moveScroll(scrollContainer)
 	}
 
-	onMount(async () => {
-		modelFiles = await fetchModelFiles()
-		if (modelFiles.length === 0) {
-			const t: ToastSettings = {
-				message: 'No LLM detected',
-				action: {
-					label: 'Reload page',
-					response: () => location.reload()
-				},
-				autohide: false
-			}
-			toastStore.trigger(t)
+	function handleToast() {
+		const t: ToastSettings = {
+			message: 'No LLM detected',
+			action: {
+				label: 'Reload',
+				response: () => location.reload()
+			},
+			autohide: false,
+			hideDismiss: true
 		}
-		selectedModel = modelFiles[0]
+		toastStore.trigger(t)
+	}
+
+	onMount(async () => {
+		try {
+			modelFiles = await fetchModelFiles()
+			console.log('modelFiles:', modelFiles)
+			if (modelFiles.length === 0) {
+				console.log('modelFiles 0')
+				handleToast()
+			}
+			selectedModel = modelFiles[0]
+		} catch (e) {
+			handleToast()
+			throw new Error("'Error fetching model files:" + e)
+		}
 	})
 </script>
 
