@@ -24,6 +24,9 @@
 	let selectedModel: string
 	let updatedChunks: string
 
+	const glassStyle =
+		'bg-gradient-to-b from-black/90 to-black/70 backdrop-blur border-[1px] border-solid border-white border-opacity-10'
+
 	function showConfig() {
 		isShowConfig = !isShowConfig
 	}
@@ -67,13 +70,13 @@
 
 	function handleToast() {
 		const t: ToastSettings = {
-			message: 'No LLM detected',
 			action: {
 				label: 'Reload',
 				response: () => location.reload()
 			},
 			autohide: false,
-			hideDismiss: true
+			hideDismiss: true,
+			message: 'No LLM detected'
 		}
 		toastStore.trigger(t)
 	}
@@ -81,7 +84,7 @@
 	onMount(async () => {
 		try {
 			modelFiles = await fetchModelFiles()
-			console.log('modelFiles:', modelFiles)
+			// console.log('modelFiles:', modelFiles)
 			if (modelFiles.length === 0) {
 				console.log('modelFiles 0')
 				handleToast()
@@ -103,12 +106,12 @@
 			: 'lg:grid-cols-1 space-y-[1em]'}"
 	>
 		<section
-			class="section w-full mx-[0.5em] p-[1em] rounded-[0.75em] space-y-[1em] bg-gradient-to-b from-black/90 to-black/70 backdrop-blur border-[1px] border-solid border-white border-opacity-10
+			class="section w-full mx-[0.5em] p-[1em] rounded-[0.75em] space-y-[1em] {glassStyle}
 				{isShowConfig ? 'md:w-full' : 'md:max-w-[100%] w-[100%]'}
 				lg:order-2 w-full max-w-[48em] xl:max-w-[64em]"
 		>
 			<div
-				class="h-[calc(100vh-11.75em)] flex flex-col space-y-2 overflow-y-auto"
+				class="h-[calc(100vh-13em)] flex flex-col space-y-2 overflow-y-auto"
 				bind:this={scrollContainer}
 			>
 				{#each messages as message, index (index)}
@@ -152,7 +155,7 @@
 
 		{#if isShowConfig}
 			<section
-				class="section w-full mx-[0.5em] p-[1em] rounded-[0.75em] space-y-[1em] bg-gradient-to-b from-black/90 to-black/70 backdrop-blur border-[1px] border-solid border-white border-opacity-10 {isShowConfig
+				class="section w-full mx-[0.5em] p-[1em] rounded-[0.75em] space-y-[1em] {glassStyle} {isShowConfig
 					? 'mt-0'
 					: 'mt-[1em]'} lg:order-1"
 			>

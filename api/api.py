@@ -2,6 +2,7 @@ import json
 import os
 from flask import Flask, jsonify, request, Response
 from flask_cors import CORS
+from file_utils.get_models import get_models
 from llm.llama_manager import llm_question, llm_vector_similarity
 from vector_db.process_files import process_files
 from vector_db.requests_db import vector_db_query
@@ -12,13 +13,8 @@ CORS(app)
 
 @app.route("/api/get-models", methods=["GET"])
 def get_model_files():
-    current_dir = os.path.dirname(os.path.abspath(__file__))
-    parent_dir = os.path.dirname(current_dir)
-    models_dir = os.path.join(parent_dir, "models")
-    list_of_models = [
-        filename for filename in os.listdir(models_dir) if filename.endswith(".bin")
-    ]
-    return jsonify(list_of_models)
+    list_of_models = get_models("models")
+    return list_of_models
 
 
 @app.route("/api/chat-llama")
