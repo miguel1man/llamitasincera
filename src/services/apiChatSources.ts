@@ -9,7 +9,7 @@ async function handleChatSources(
 
 	try {
 		const response = await fetch(
-			`http://localhost:6757/api/chat-sources?question=${encodeURIComponent(
+			`http://localhost:5000/api/chat-sources?question=${encodeURIComponent(
 				question
 			)}&model_name=${model_name}`
 		)

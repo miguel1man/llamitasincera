@@ -1,10 +1,10 @@
-import json
-from flask import Flask, jsonify, request, Response
+from flask import Flask, request, Response
 from flask_cors import CORS
 from file_utils.get_models import get_models
-from llm.llama_manager import llm_question, llm_vector_similarity
+from llm.llama_manager import llm_question
+from llm.api_chat_sources import api_chat_sources
+from vector_db.api_embeddings import api_embeddings
 from vector_db.process_files import process_files
-from vector_db.requests_db import vector_db_query
 
 app = Flask(__name__)
 CORS(app)
@@ -31,63 +31,26 @@ def chat_llama():
 
 @app.route("/api/upload-files", methods=["POST"])
 def upload_files():
-    response = process_files(request)
-    return response
+    upload_files = process_files(request)
+    return upload_files
 
 
 @app.route("/api/similar-embeddings", methods=["POST"])
 def similar_embeddings():
-    req = request.json
-    question_id = req["id"]
-    question_text = req["question"]
-
-    responses = vector_db_query(question_text)
-    # print(f"responses: /n{responses}")
-
-    if len(responses) == 0:
-        return jsonify({"id": question_id, "content": "No answers on DB."})
-
-    unique_responses = set()
-    response_list = []
-
-    for doc, score in responses:
-        res_dict = {"text": doc.page_content, "metadata": doc.metadata, "score": score}
-        res_json = json.dumps(res_dict, sort_keys=True)
-
-        if res_json not in unique_responses:
-            unique_responses.add(res_json)
-            response_list.append(res_dict)
-
-    response_with_id = {"id": question_id, "content": response_list}
-
-    return jsonify(response_with_id)
+    similar_embeddings = api_embeddings(request)
+    return similar_embeddings
 
 
 @app.route("/api/chat-sources")
 def chat_similarity():
-    question = request.args.get("question")
-    model_name = request.args.get("model_name")
-    answer_db = vector_db_query(question)
-    unique_responses = set()
-    answer_data = []
+    req = api_chat_sources(request)
 
-    for doc, score in answer_db:
-        res_dict = {"text": doc.page_content, "metadata": doc.metadata, "score": score}
-        res_json = json.dumps(res_dict, sort_keys=True)
-
-        if res_json not in unique_responses:
-            unique_responses.add(res_json)
-            answer_data.append(res_dict)
-
-    # print("answer_data:", answer_data)
-    # print("model_name:", model_name)
     def generate_similarity():
-        response = llm_vector_similarity(question, answer_data, model_name)
-        for word in response.split():
+        for word in req.split():
             yield word + " "
 
     return Response(generate_similarity(), mimetype="text/plain")
 
 
 if __name__ == "__main__":
-    app.run(port=6757, debug=True)
+    app.run(port=5000, debug=True)

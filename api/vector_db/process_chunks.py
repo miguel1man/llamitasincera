@@ -10,16 +10,16 @@ def process_chunks_on_db(chunks, db):
             header = chunks[i]["header"] if "header" in chunks[i] else None
 
             texts = [chunk]
-            print(f"\nlength characters: {len(texts[0])}")
+            print(f"\scanned characters: {len(texts[0])}")
             splits = split_text_to_chunks(texts[0])
-            print("splits length:", len(splits))
+            # print("splits length:", len(splits))
 
             for split in splits:
-                print("split length:", len(split))
+                # print("split length:", len(split))
                 metadatas = [{"file": file}]
                 if header is not None:
                     metadatas[0]["header"] = header
-                print(f"metadatas: {metadatas}")
+                # print(f"metadatas: {metadatas}")
                 db.add_texts(texts=[split], metadatas=metadatas)
 
         return True

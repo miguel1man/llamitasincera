@@ -1,5 +1,5 @@
 async function getSimilarEmbeddings(question: string, id: string) {
-	const url = `http://localhost:6757/api/similar-embeddings`
+	const url = `http://localhost:5000/api/similar-embeddings`
 	const body = {
 		question,
 		id
