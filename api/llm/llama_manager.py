@@ -1,7 +1,11 @@
+import os
 from langchain.llms import LlamaCpp
 from langchain import PromptTemplate, LLMChain
 from langchain.callbacks.manager import CallbackManager
 from langchain.callbacks.streaming_stdout import StreamingStdOutCallbackHandler
+
+current_dir = os.path.dirname(os.path.abspath(__file__))
+parent_dir = os.path.dirname(os.path.dirname(current_dir))
 
 template_data = """
 Pregunta:
@@ -24,7 +28,7 @@ def llm_vector_similarity(question, answer_data, model_name, template=template_d
             callback_manager=callback_manager,
             max_tokens=4096,
             n_ctx=2048,
-            model_path=f"models/{model_name}",
+            model_path=f"{parent_dir}/models/{model_name}",
             temperature=0,
             verbose=True,
             streaming=True,
@@ -63,7 +67,7 @@ def llm_question(question, model_name, template=template_question):
             callback_manager=callback_manager,
             max_tokens=4096,
             n_ctx=2048,
-            model_path=f"models/{model_name}",
+            model_path=f"{parent_dir}/models/{model_name}",
             temperature=0,
             verbose=True,
         )

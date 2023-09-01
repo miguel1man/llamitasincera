@@ -28,7 +28,7 @@ def process_pdf(folder_path, filename):
         for doc in documents:
             processed_pdf.append({"text": doc.page_content, "file": filename})
 
-        print(f"processed_pdf: {processed_pdf}")
+        # print(f"processed_pdf: {processed_pdf}")
         return processed_pdf
 
     except Exception as e:

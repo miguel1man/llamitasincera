@@ -1,5 +1,4 @@
 import json
-import os
 from flask import Flask, jsonify, request, Response
 from flask_cors import CORS
 from file_utils.get_models import get_models
@@ -43,6 +42,10 @@ def similar_embeddings():
     question_text = req["question"]
 
     responses = vector_db_query(question_text)
+    # print(f"responses: /n{responses}")
+
+    if len(responses) == 0:
+        return jsonify({"id": question_id, "content": "No answers on DB."})
 
     unique_responses = set()
     response_list = []

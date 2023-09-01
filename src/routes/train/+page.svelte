@@ -87,8 +87,8 @@
 		</h1>
 
 		<FileDropzone name="files" on:change={onChangeHandler} multiple>
-			<svelte:fragment slot="message">Supported types</svelte:fragment>
-			<svelte:fragment slot="meta">pdf, doc, txt and md.</svelte:fragment>
+			<svelte:fragment slot="message">Supported types:</svelte:fragment>
+			<svelte:fragment slot="meta">PDF and Markdown.</svelte:fragment>
 		</FileDropzone>
 
 		{#if loadingSources}
