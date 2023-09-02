@@ -126,7 +126,7 @@
 				{/each}
 			</div>
 
-			<section
+			<div
 				class="input-group input-group-divider focus:outline-color-blue grid-cols-[auto_1fr_auto] rounded-[0.5em] gap-0 md:min-w-[30em] lg:min-w-[28em]"
 			>
 				<button
@@ -149,7 +149,7 @@
 					rows="1"
 				/>
 				<button class="bg-red-700" on:click={handleSendChat}>Send</button>
-			</section>
+			</div>
 			<Toast position="t" background="bg-red-700" />
 		</section>
 
