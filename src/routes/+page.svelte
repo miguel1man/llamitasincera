@@ -6,6 +6,7 @@
 	import type { ToastSettings } from '@skeletonlabs/skeleton'
 	import { fetchModelFiles } from '../services/apiGetModels'
 	import { addAnswer, addQuestion } from '../services/addChats'
+	import { ProgressRadial } from '@skeletonlabs/skeleton'
 	import SourcesTree from '../components/SourcesTree.svelte'
 	import moveScroll from '../utils/moveScroll'
 	import getSimilarEmbeddings from '../services/apiSimilarEmbeddings'
@@ -23,6 +24,7 @@
 	let scrollContainer: any
 	let selectedModel: string
 	let updatedChunks: string
+	let waitingChatResponse = false
 
 	const glassStyle =
 		'bg-gradient-to-b from-black/90 to-black/70 backdrop-blur border-[1px] border-solid border-white border-opacity-10'
@@ -40,6 +42,7 @@
 	}
 
 	const handleSendChat = async () => {
+		waitingChatResponse = true
 		const newQuestion = await addQuestion(currentMessage, messageCounter, messages, newQuestionId)
 		messages = [...newQuestion]
 		const userMessage = currentMessage
@@ -66,6 +69,7 @@
 		currentMessage = ''
 		await tick()
 		moveScroll(scrollContainer)
+		waitingChatResponse = false
 	}
 
 	function handleToast() {
@@ -148,7 +152,30 @@
 					placeholder="Write a question..."
 					rows="1"
 				/>
-				<button class="bg-red-700" on:click={handleSendChat}>Send</button>
+				<button
+					class="bg-red-700"
+					on:click={handleSendChat}
+					disabled={waitingChatResponse ? true : false}
+				>
+					{#if waitingChatResponse}
+						<ProgressRadial width="w-6" stroke={80} />
+					{:else}
+						<svg
+							xmlns="http://www.w3.org/2000/svg"
+							fill="none"
+							viewBox="0 0 24 24"
+							stroke-width="1.5"
+							stroke="currentColor"
+							class="w-6 h-6"
+						>
+							<path
+								stroke-linecap="round"
+								stroke-linejoin="round"
+								d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.27 20.876L5.999 12zm0 0h7.5"
+							/>
+						</svg>
+					{/if}
+				</button>
 			</div>
 			<Toast position="t" background="bg-red-700" />
 		</section>
