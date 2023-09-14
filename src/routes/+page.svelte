@@ -162,18 +162,17 @@
 					{:else}
 						<svg
 							xmlns="http://www.w3.org/2000/svg"
-							fill="none"
+							width="1.2em"
+							height="1.2em"
 							viewBox="0 0 24 24"
-							stroke-width="1.5"
-							stroke="currentColor"
-							class="w-6 h-6"
+							{...$$props}
+							><path
+								fill="currentColor"
+								fill-rule="evenodd"
+								d="M3.402 6.673c-.26-2.334 2.143-4.048 4.266-3.042l11.944 5.658c2.288 1.083 2.288 4.339 0 5.422L7.668 20.37c-2.123 1.006-4.525-.708-4.266-3.042L3.882 13H12a1 1 0 1 0 0-2H3.883l-.48-4.327Z"
+								clip-rule="evenodd"
+							/></svg
 						>
-							<path
-								stroke-linecap="round"
-								stroke-linejoin="round"
-								d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.27 20.876L5.999 12zm0 0h7.5"
-							/>
-						</svg>
 					{/if}
 				</button>
 			</div>
