@@ -6,6 +6,7 @@
 	import type { ToastSettings } from '@skeletonlabs/skeleton'
 	import { fetchModelFiles } from '../services/apiGetModels'
 	import { addAnswer, addQuestion } from '../services/addChats'
+	import { ProgressRadial } from '@skeletonlabs/skeleton'
 	import SourcesTree from '../components/SourcesTree.svelte'
 	import moveScroll from '../utils/moveScroll'
 	import getSimilarEmbeddings from '../services/apiSimilarEmbeddings'
@@ -23,6 +24,7 @@
 	let scrollContainer: any
 	let selectedModel: string
 	let updatedChunks: string
+	let waitingChatResponse = false
 
 	const glassStyle =
 		'bg-gradient-to-b from-black/90 to-black/70 backdrop-blur border-[1px] border-solid border-white border-opacity-10'
@@ -40,6 +42,7 @@
 	}
 
 	const handleSendChat = async () => {
+		waitingChatResponse = true
 		const newQuestion = await addQuestion(currentMessage, messageCounter, messages, newQuestionId)
 		messages = [...newQuestion]
 		const userMessage = currentMessage
@@ -66,6 +69,7 @@
 		currentMessage = ''
 		await tick()
 		moveScroll(scrollContainer)
+		waitingChatResponse = false
 	}
 
 	function handleToast() {
@@ -126,7 +130,7 @@
 				{/each}
 			</div>
 
-			<section
+			<div
 				class="input-group input-group-divider focus:outline-color-blue grid-cols-[auto_1fr_auto] rounded-[0.5em] gap-0 md:min-w-[30em] lg:min-w-[28em]"
 			>
 				<button
@@ -148,8 +152,30 @@
 					placeholder="Write a question..."
 					rows="1"
 				/>
-				<button class="bg-red-700" on:click={handleSendChat}>Send</button>
-			</section>
+				<button
+					class="bg-red-700"
+					on:click={handleSendChat}
+					disabled={waitingChatResponse ? true : false}
+				>
+					{#if waitingChatResponse}
+						<ProgressRadial width="w-6" stroke={80} />
+					{:else}
+						<svg
+							xmlns="http://www.w3.org/2000/svg"
+							width="1.2em"
+							height="1.2em"
+							viewBox="0 0 24 24"
+							{...$$props}
+							><path
+								fill="currentColor"
+								fill-rule="evenodd"
+								d="M3.402 6.673c-.26-2.334 2.143-4.048 4.266-3.042l11.944 5.658c2.288 1.083 2.288 4.339 0 5.422L7.668 20.37c-2.123 1.006-4.525-.708-4.266-3.042L3.882 13H12a1 1 0 1 0 0-2H3.883l-.48-4.327Z"
+								clip-rule="evenodd"
+							/></svg
+						>
+					{/if}
+				</button>
+			</div>
 			<Toast position="t" background="bg-red-700" />
 		</section>
 

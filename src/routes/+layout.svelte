@@ -3,6 +3,8 @@
 	import '@skeletonlabs/skeleton/styles/skeleton.css'
 	import '../app.postcss'
 	import { AppShell, AppBar } from '@skeletonlabs/skeleton'
+
+	const buttonStyle = 'btn btn-sm bg-white/[15%]'
 </script>
 
 <AppShell>
@@ -12,10 +14,10 @@
 				<a href="/"><strong class="text-xl uppercase">Llamita Sincera</strong></a>
 			</svelte:fragment>
 			<svelte:fragment slot="trail">
-				<a class="btn btn-sm bg-white/[15%]" href="/">Chat</a>
-				<a class="btn btn-sm bg-white/[15%]" href="/train">Train</a>
+				<a class="{buttonStyle} px-[1.25em]" href="/">Chat</a>
+				<a class="{buttonStyle} px-[1.25em]" href="/train">Train</a>
 				<a
-					class="btn btn-sm bg-white/[15%]"
+					class="{buttonStyle} px-[1em]"
 					href="https://github.com/miguel1man/llamitasincera"
 					target="_blank"
 					rel="noreferrer"

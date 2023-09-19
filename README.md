@@ -10,16 +10,41 @@
 - Python 3.9 - 3.10
 - Node 18
 
-## Install
+## Installation
 
-1. `pip install -r requirements.txt`
-2. `npm install`
+1. Install Python dependencies:
+
+```
+pip install -r requirements.txt
+```
+
+2. Install Node.js dependencies:
+
+```
+npm install
+```
+
 3. Download a language model and place it in the `models` folder. [List of LLMs](models/README.md)
 
 ## Run
 
-- Backend: `main.py`
-- Frontend: `npm run dev`
+1. Start the backend server using one of the following commands, depending on your Python version:
+
+```
+python -i main.py
+```
+
+or 
+
+```
+python3 -i main.py
+```
+
+2. Once the backend is up and running, start the frontend development server with the following command: 
+
+```
+npm run dev
+```
 
 ## Backend
 
