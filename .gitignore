@@ -180,3 +180,4 @@ vite.config.ts.timestamp-*
 # folders
 temp_uploads/
 vector_database/
+db_chroma/

@@ -7,7 +7,7 @@
 
 ## Requirements
 
-- Python 3.9
+- Python 3.9 - 3.10
 - Node 18
 
 ## Install

@@ -6,7 +6,7 @@ current_dir = os.path.dirname(os.path.abspath(__file__))
 parent_dir = os.path.dirname(os.path.dirname(current_dir))
 
 INDEX_NAME_1 = "index_1"
-INDEX_PATH_1 = f"{parent_dir}/vector_database/chroma_1"
+INDEX_PATH_1 = f"{parent_dir}/db_chroma/db_1"
 INDEX_PATH_2 = "vector_db/faiss_1"
 
 
